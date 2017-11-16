@@ -94,7 +94,7 @@ while True:
                 continue
 
         writeNumber(send_code)
-        print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[send_code], bMessageStyle.ENDC,
+        print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(send_code)], bMessageStyle.ENDC,
         # sleep one second
         time.sleep(1)
 
