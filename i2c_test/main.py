@@ -87,18 +87,18 @@ def readNumber():
 while True:
         print "\nAvailable requests: "
         for key in i2cRequestMessagesDictionary:
-                print "\n   ", key, ': ', bMessageStyle.OKBLUE, i2cRequestMessagesDictionary[key], bMessageStyle.ENDC
+                print "\n   ", key, ':', bMessageStyle.OKBLUE, i2cRequestMessagesDictionary[key], bMessageStyle.ENDC
         print "\n"
         send_code = input("Select which request code you want to send: ")
         if not send_code:
                 continue
 
         writeNumber(send_code)
-        print "\nMessage sent (from Master to Slave): ", i2cRequestMessagesDictionary[key]
+        print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKBLUE, i2cRequestMessagesDictionary[key], bMessageStyle.ENDC,
         # sleep one second
         time.sleep(1)
 
         read_code = readNumber()
-        print "\nMessage read (from Slave to Master): ", read_code
+        print "\nMessage read (from Slave to Master): ", bMessageStyle.OKBLUE, read_code, bMessageStyle.ENDC,
         # print "Message read (from Slave to Master): ", i2cSlaveStatusMessagesDictionary[read_code]
         print
