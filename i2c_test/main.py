@@ -4,6 +4,20 @@
 import smbus
 import time
 
+####################
+# GENERAL SETTINGS #
+####################
+# Styling for messages in the console
+class bMessageStyle:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 ##############
 # i2c CONFIG #
 ##############
@@ -73,18 +87,18 @@ def readNumber():
 while True:
         print "\nAvailable requests: "
         for key in i2cRequestMessagesDictionary:
-                print "\n   ", key, ': ', i2cRequestMessagesDictionary[key]
+                print "\n   ", key, ': ', bMessageStyle.OKBLUE, i2cRequestMessagesDictionary[key], bMessageStyle.ENDC
         print "\n"
         send_code = input("Select which request code you want to send: ")
         if not send_code:
                 continue
 
         writeNumber(send_code)
-        print "Message sent (from Master to Slave): ", i2cRequestMessagesDictionary[key]
+        print "\nMessage sent (from Master to Slave): ", i2cRequestMessagesDictionary[key]
         # sleep one second
         time.sleep(1)
 
         read_code = readNumber()
-        print "Message read (from Slave to Master): ", read_code
+        print "\nMessage read (from Slave to Master): ", read_code
         # print "Message read (from Slave to Master): ", i2cSlaveStatusMessagesDictionary[read_code]
         print
