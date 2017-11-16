@@ -93,12 +93,15 @@ while True:
         if not send_code:
                 continue
 
-        writeNumber(send_code)
-        print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(send_code)], bMessageStyle.ENDC,
-        # sleep one second
-        time.sleep(1)
+        if send_code in i2cRequestMessagesDictionary:
+                writeNumber(send_code)
+                print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(send_code)], bMessageStyle.ENDC,
+                # sleep one second
+                time.sleep(1)
 
-        read_code = readNumber()
-        print "\nMessage read (from Slave to Master): ", bMessageStyle.FAIL, read_code, bMessageStyle.ENDC,
-        # print "Message read (from Slave to Master): ", i2cSlaveStatusMessagesDictionary[read_code]
-        print
+                read_code = readNumber()
+                print "\nMessage read (from Slave to Master): ", bMessageStyle.FAIL, read_code, bMessageStyle.ENDC,
+                # print "Message read (from Slave to Master): ", i2cSlaveStatusMessagesDictionary[read_code]
+                print
+        else:
+                print bMessageStyle.WARNING, "\nThe selected code is not available, please select a code from the list: ", bMessageStyle.ENDC,
