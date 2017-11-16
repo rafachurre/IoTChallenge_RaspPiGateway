@@ -71,9 +71,10 @@ def readNumber():
         return read_code
 
 while True:
-        print "Available requests: "
+        print "\nAvailable requests: "
         for key in i2cRequestMessagesDictionary:
-                print "\n\t", key, ': ', i2cRequestMessagesDictionary[key]
+                print "\n   ", key, ': ', i2cRequestMessagesDictionary[key]
+        print "\n"
         send_code = input("Select which request code you want to send: ")
         if not send_code:
                 continue
