@@ -93,7 +93,7 @@ while True:
         if not send_code:
                 continue
 
-        if send_code in i2cRequestMessagesDictionary:
+        if str(send_code) in i2cRequestMessagesDictionary:
                 writeNumber(send_code)
                 print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(send_code)], bMessageStyle.ENDC,
                 # sleep one second
