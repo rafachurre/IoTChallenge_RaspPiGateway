@@ -31,21 +31,21 @@ class bMessageStyle:
 #--------------------------
 # ~ POST
 class oPostData:
-    url = "<ApiEndpointUrl>"
+    url = "<data_service_endpoint>"
     token = "<token>"
-    messageTypeId = "<messageType>"
-    headers = {'Authorization': 'Bearer ' + oPostData.token, 'Content-Type': 'application/json'}
+    messageTypeId = "<message_type>"
+    headers = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}
 
 # PUSH NOTIFICATIONS SERVICE CONFIG
 #-----------------------------------
 # ~ GET
 class oGetPushMessages:
-    url = "<ApiEndpointUrl>"
+    url = "<push_service_read_endpoint>"
     token = "<token>"
-    headers = {'Authorization': 'Bearer ' + oGetPushMessages.token, 'Content-Type': 'application/json'}
-    
+    headers = {'Authorization': 'Bearer ' + token}
+
 # Seconds wating until next GET request to the Push Notification Service endpoint
-getPushNotif_refreshTime = 3 
+getPushNotif_refreshTime = 3
 
 ##############
 # i2c CONFIG #
@@ -58,25 +58,25 @@ slaveAddress = 0x04
 i2c_writeRead_interval = 1
 
 # Collection of messages (constants)
-SLAVE_STATUS_BOX_OPEN = 1 # The box is open 
-SLAVE_STATUS_BOX_CLOSED = 2 # The box is closed 
-SLAVE_STATUS_BOX_OPENCLOSED_UNKNOWN = 3 # It is not clear if the box is open or closed (error handling) 
-SLAVE_STATUS_BOX_EMPTY = 4 # The box is empty 
-SLAVE_STATUS_BOX_FULL = 5 # The box is full 
-SLAVE_STATUS_BOX_EMPTYFULL_UNKNOWN = 6 # It is not clear if the box is empty or full (error handling) 
-SLAVE_STATUS_LED_BLINKING = 7 # The LED is blinking 
-SLAVE_STATUS_LED_OFF = 8 # The LED is off 
+SLAVE_STATUS_BOX_OPEN = 1 # The box is open
+SLAVE_STATUS_BOX_CLOSED = 2 # The box is closed
+SLAVE_STATUS_BOX_OPENCLOSED_UNKNOWN = 3 # It is not clear if the box is open or closed (error handling)
+SLAVE_STATUS_BOX_EMPTY = 4 # The box is empty
+SLAVE_STATUS_BOX_FULL = 5 # The box is full
+SLAVE_STATUS_BOX_EMPTYFULL_UNKNOWN = 6 # It is not clear if the box is empty or full (error handling)
+SLAVE_STATUS_LED_BLINKING = 7 # The LED is blinking
+SLAVE_STATUS_LED_OFF = 8 # The LED is off
 SLAVE_STATUS_LED_BLINKINGOFF_UNKNOWN = 9 # It is not clear if the LED is blinking or off (error handling)
 
-SLAVE_STATUS_NO_DATA_REQUEST_RECEIVED_PREVIOUSLY = 50 # Return message when Master reads without writing a DATA_REQUEST message before 
-DATA_REQUEST_LAST_CODE_RECEIVED = 51 # Master wants to read() the previous code received. Prepare "to_send" variable for a read event 
-DATA_REQUEST_STATUS_OPENCLOSE = 52 # Master wants to read() the open/close status. Prepare "to_send" variable for a read event 
+SLAVE_STATUS_NO_DATA_REQUEST_RECEIVED_PREVIOUSLY = 50 # Return message when Master reads without writing a DATA_REQUEST message before
+DATA_REQUEST_LAST_CODE_RECEIVED = 51 # Master wants to read() the previous code received. Prepare "to_send" variable for a read event
+DATA_REQUEST_STATUS_OPENCLOSE = 52 # Master wants to read() the open/close status. Prepare "to_send" variable for a read event
 DATA_REQUEST_STATUS_EMPTYFULL = 53 # Master wants to read() the empty/full status. Prepare "to_send" variable for a read event
 
-ACTION_REQUEST_OPEN_BOX = 100 # Master requests to open the box 
-ACTION_REQUEST_CLOSE_BOX = 101 # Master requests to close the box 
-ACTION_REQUEST_BLINK_LED = 102 # Master requests to blink the LED 
-ACTION_REQUEST_TURN_OFF_LED = 103 # Master requests to turn off the LED 
+ACTION_REQUEST_OPEN_BOX = 100 # Master requests to open the box
+ACTION_REQUEST_CLOSE_BOX = 101 # Master requests to close the box
+ACTION_REQUEST_BLINK_LED = 102 # Master requests to blink the LED
+ACTION_REQUEST_TURN_OFF_LED = 103 # Master requests to turn off the LED
 ACTION_REQUEST_SET_KEYPAD_PWD = 104 # Master requests to set a new password. A [0-255] password will be sent in the next write() byte
 
 # Messages dictionaries
@@ -122,7 +122,7 @@ def i2c_readCode():
 
 # ~ Cloud communitacion
 def cloud_postData(oPostDataParams, oMessageParams):
-    """ 
+    """
     class oPostDataParams:
         url
         token
@@ -133,13 +133,13 @@ def cloud_postData(oPostDataParams, oMessageParams):
         status
         timestamp
     """
-    payload = {"mode":"sync","messageType":oPostDataParams.sMessageTypeId,"messages":[{"status": str(oMessageParams["status"]),"timestamp":oMessageParams["timestamp"]}]}
+    payload = {"mode":"sync","messageType":oPostDataParams.messageTypeId,"messages":[{"status": str(oMessageParams["status"]),"timestamp":oMessageParams["timestamp"]}]}
     r = requests.post(oPostDataParams.url, headers=oPostDataParams.headers, data=json.dumps(payload))
-    return r
+    return r.json()
 
 def cloud_getPushMsgs():
     r = requests.get(oGetPushMessages.url, headers=oGetPushMessages.headers)
-    return r
+    return r.json()
 
 
 # main loop
@@ -148,11 +148,11 @@ while True:
     pushNotifications = cloud_getPushMsgs()
     print "\nPush Notifications received from Cloud: ", bMessageStyle.OKBLUE, pushNotifications, bMessageStyle.ENDC
 
-    if (pushNotifications.length > 0):
+    if (len(pushNotifications) > 0):
         index = 0
-        while (index < pushNotifications.length):
+        while (index < len(pushNotifications)):
             oPushMessage = pushNotifications[index]
-            # Encoded
+            # Encoded           
             oPushMessage_string = json.dumps(oPushMessage)
             # Decoded
             oPushMessage_decoded = json.loads(oPushMessage_string)
@@ -166,7 +166,7 @@ while True:
 
             # Read Response Code (i2c)
             i2c_response_code = i2c_readCode()
-            print "\nMessage read (from Slave to Master): ", bMessageStyle.FAIL, read_code, bMessageStyle.ENDC,
+            print "\nMessage read (from Slave to Master): ", bMessageStyle.FAIL, i2c_response_code, bMessageStyle.ENDC,
             print
 
             # Send response to cloud
