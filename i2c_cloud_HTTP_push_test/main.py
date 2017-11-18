@@ -3,6 +3,9 @@
 ####################
 import smbus
 import time
+import requests
+import json
+import datetime
 
 ####################
 # GENERAL SETTINGS #
@@ -18,6 +21,32 @@ class bMessageStyle:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+################
+# CLOUD CONFIG #
+################
+# Config data needed for the cloud connection
+# Endpoint / OAuth Token / Device Id / Message Type Id
+
+# SEND DATA SERVICE CONFIG
+#--------------------------
+# ~ POST
+class oPostData:
+    url = "<ApiEndpointUrl>"
+    token = "<token>"
+    messageTypeId = "<messageType>"
+    headers = {'Authorization': 'Bearer ' + oPostData.token, 'Content-Type': 'application/json'}
+
+# PUSH NOTIFICATIONS SERVICE CONFIG
+#-----------------------------------
+# ~ GET
+class oGetPushMessages:
+    url = "<ApiEndpointUrl>"
+    token = "<token>"
+    headers = {'Authorization': 'Bearer ' + oGetPushMessages.token, 'Content-Type': 'application/json'}
+    
+# Seconds wating until next GET request to the Push Notification Service endpoint
+getPushNotif_refreshTime = 3 
+
 ##############
 # i2c CONFIG #
 ##############
@@ -25,6 +54,8 @@ class bMessageStyle:
 bus = smbus.SMBus(0)
 # This is the address we setup in the Arduino Program
 slaveAddress = 0x04
+# Seconds after Write() wating to Read() the response
+i2c_writeRead_interval = 1
 
 # Collection of messages (constants)
 SLAVE_STATUS_BOX_OPEN = 1 # The box is open 
@@ -51,57 +82,100 @@ ACTION_REQUEST_SET_KEYPAD_PWD = 104 # Master requests to set a new password. A [
 # Messages dictionaries
 #----------------------
 i2cSlaveStatusMessagesDictionary = {
-        "1": "The box is open",
-        "2": "The box is closed",
-        "3": "Can't determine if the box is open or closed. Some error may happened",
-        "4": "The box is empty",
-        "5": "The box is full",
-        "6": "Can't determine if the box is empty or full. Some error may happened",
-        "7": "The box LED is blinking",
-        "8": "The box LED is off",
-        "9": "Can't determine if the box LED is blinking or is off. Some error may happened",
-        "50": "Slave don't know which data Master wants to read. Send a valid 'REQUEST_DATA' code first"
+    "1": "The box is open",
+    "2": "The box is closed",
+    "3": "Can't determine if the box is open or closed. Some error may happened",
+    "4": "The box is empty",
+    "5": "The box is full",
+    "6": "Can't determine if the box is empty or full. Some error may happened",
+    "7": "The box LED is blinking",
+    "8": "The box LED is off",
+    "9": "Can't determine if the box LED is blinking or is off. Some error may happened",
+    "50": "Slave don't know which data Master wants to read. Send a valid 'REQUEST_DATA' code first"
 }
 i2cRequestMessagesDictionary = {
-        "51": "DATA REQUEST: Slave, please prepare the 'previous_code_received' to be read",
-        "52": "DATA REQUEST: Slave, please prepare the 'OpenClose_status' to be read",
-        "53": "DATA REQUEST: Slave, please prepare the 'EmptyFull_status' to be read",
-        "100": "ACTION: Slave, please open the box",
-        "101": "ACTION: Slave, please close the box",
-        "102": "ACTION: Slave, please blink the LED",
-        "103": "ACTION: Slave, please turn the LED off",
-        "104": "ACTION: Slave, please prepare to receive a new password in the next write() request"
+    "51": "DATA REQUEST: Slave, please prepare the 'previous_code_received' to be read",
+    "52": "DATA REQUEST: Slave, please prepare the 'OpenClose_status' to be read",
+    "53": "DATA REQUEST: Slave, please prepare the 'EmptyFull_status' to be read",
+    "100": "ACTION: Slave, please open the box",
+    "101": "ACTION: Slave, please close the box",
+    "102": "ACTION: Slave, please blink the LED",
+    "103": "ACTION: Slave, please turn the LED off",
+    "104": "ACTION: Slave, please prepare to receive a new password in the next write() request"
 }
 
 
-def writeNumber(send_code):
-        bus.write_byte(slaveAddress, send_code)
-        # bus.write_byte_data(slaveAddress, 0, send_code)
-        return -1
+############
+# FUNCIONS #
+############
 
-def readNumber():
-        read_code = bus.read_byte(slaveAddress)
-        # number = bus.read_byte_data(slaveAddress, 1)
-        return read_code
+# ~ i2c communication
+def i2c_writeCode(send_code):
+    bus.write_byte(slaveAddress, send_code)
+    # bus.write_byte_data(slaveAddress, 0, send_code)
+    return -1
 
+def i2c_readCode():
+    read_code = bus.read_byte(slaveAddress)
+    # number = bus.read_byte_data(slaveAddress, 1)
+    return read_code
+
+# ~ Cloud communitacion
+def cloud_postData(oPostDataParams, oMessageParams):
+    """ 
+    class oPostDataParams:
+        url
+        token
+        messageTypeId
+        headers
+
+    class oMessageParams:
+        status
+        timestamp
+    """
+    payload = {"mode":"sync","messageType":oPostDataParams.sMessageTypeId,"messages":[{"status": str(oMessageParams["status"]),"timestamp":oMessageParams["timestamp"]}]}
+    r = requests.post(oPostDataParams.url, headers=oPostDataParams.headers, data=json.dumps(payload))
+    return r
+
+def cloud_getPushMsgs():
+    r = requests.get(oGetPushMessages.url, headers=oGetPushMessages.headers)
+    return r
+
+
+# main loop
 while True:
-        print "\nAvailable requests: "
-        for key in i2cRequestMessagesDictionary:
-                print "\n   ", key, ':', bMessageStyle.OKBLUE, i2cRequestMessagesDictionary[key], bMessageStyle.ENDC
-        print "\n"
-        send_code = input("Select which request code you want to send: ")
-        if not send_code:
-                continue
+    # Get Push Notifications
+    pushNotifications = cloud_getPushMsgs()
+    print "\nPush Notifications received from Cloud: ", bMessageStyle.OKBLUE, pushNotifications, bMessageStyle.ENDC
 
-        if str(send_code) in i2cRequestMessagesDictionary:
-                writeNumber(send_code)
-                print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(send_code)], bMessageStyle.ENDC,
-                # sleep one second
-                time.sleep(1)
+    if (pushNotifications.length > 0):
+        index = 0
+        while (index < pushNotifications.length):
+            oPushMessage = pushNotifications[index]
+            # Encoded
+            oPushMessage_string = json.dumps(oPushMessage)
+            # Decoded
+            oPushMessage_decoded = json.loads(oPushMessage_string)
 
-                read_code = readNumber()
-                print "\nMessage read (from Slave to Master): ", bMessageStyle.FAIL, read_code, bMessageStyle.ENDC,
-                # print "Message read (from Slave to Master): ", i2cSlaveStatusMessagesDictionary[read_code]
-                print
-        else:
-                print bMessageStyle.WARNING, "\nThe selected code is not available, please select a code from the list: ", bMessageStyle.ENDC,
+            # Send Action Code (i2c)
+            iReceivedCode = oPushMessage_decoded["messages"][0]["ActionCode"]
+            i2c_writeCode(iReceivedCode)
+            print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(iReceivedCode)], bMessageStyle.ENDC,
+            # sleep one second
+            time.sleep(i2c_writeRead_interval)
+
+            # Read Response Code (i2c)
+            i2c_response_code = i2c_readCode()
+            print "\nMessage read (from Slave to Master): ", bMessageStyle.FAIL, read_code, bMessageStyle.ENDC,
+            print
+
+            # Send response to cloud
+            currentTime = time.time()
+            timestamp = datetime.datetime.fromtimestamp(currentTime).strftime('%Y-%m-%dT%H:%M:%S')
+            oMessageParams = {"status": i2c_response_code, "timestamp":timestamp }
+            cloud_postData(oPostData, oMessageParams)
+
+            # Update Loop
+            index += 1
+
+    time.sleep(getPushNotif_refreshTime)
