@@ -160,13 +160,20 @@ while True:
             # Send Action Code (i2c)
             iReceivedCode = oPushMessage_decoded["messages"][0]["ActionCode"]
             i2c_writeCode(iReceivedCode)
-            print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(iReceivedCode)], bMessageStyle.ENDC,
+            if str(iReceivedCode) in i2cRequestMessagesDictionary:
+                print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(iReceivedCode)], bMessageStyle.ENDC
+            else:
+                print "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, str(iReceivedCode), bMessageStyle.ENDC
             # sleep one second
             time.sleep(i2c_writeRead_interval)
 
             # Read Response Code (i2c)
             i2c_response_code = i2c_readCode()
-            print "\nMessage read (from Slave to Master): ", bMessageStyle.FAIL, i2c_response_code, bMessageStyle.ENDC,
+            if str(i2c_response_code) in i2cSlaveStatusMessagesDictionary:
+                print "\nMessage read (from Slave to Master): ", bMessageStyle.FAIL, i2cSlaveStatusMessagesDictionary[str(i2c_response_code)], bMessageStyle.ENDC
+            else:
+                print "\nMessage sent (from Master to Slave): ", bMessageStyle.FAIL, str(i2c_response_code), bMessageStyle.ENDC
+            
             print
 
             # Send response to cloud
