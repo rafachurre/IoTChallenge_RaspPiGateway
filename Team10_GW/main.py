@@ -38,7 +38,7 @@ getPushNotif_refreshFrequency = 10 # number if cycles before sending a GET reque
 #--------------------------
 
 # ~ DEVICE
-class deviceInfo
+class deviceInfo:
     deviceId= "<DeviceID>"
 	token = "<token>"
 
