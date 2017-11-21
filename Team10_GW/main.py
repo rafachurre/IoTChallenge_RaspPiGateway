@@ -327,7 +327,7 @@ while True:
         else: 
             i2c_writeMessage(sSlaveAddress, iMessageCode, iMessageData)
             if(debugMode):
-                print_i2cMessageSent(iMessageCode)
+                print_i2cMessageSent(sSlaveAddress, iMessageCode)
             
             # sleep i2c_writeRead_interval seconds
             time.sleep(i2c_writeRead_interval)
@@ -335,7 +335,7 @@ while True:
             # Read Response Code (i2c)
             i2c_response_code = i2c_readCode(sSlaveAddress)
             if(debugMode):
-                print_i2cMessageReceived(i2c_response_code)
+                print_i2cMessageReceived(sSlaveAddress, i2c_response_code)
 
             # Send response to cloud
             oMessageParams = {"slaveAddress": sSlaveAddress, "messageCode": i2c_response_code, "messageData": 0 }
