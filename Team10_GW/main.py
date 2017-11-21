@@ -152,11 +152,11 @@ def performMasterAction(iMessageCode, iMessageData):
         sGwStatusMessage = ""
         iGwStatusCode = ""
         if(iMessageData == 1):
-            debugMode = True
+            global debugMode = True
             sGwStatusMessage = "Debug mode ENABLED"
             iGwStatusCode = GW_STATUS_DEBUG_MODE_ENABLED
         else: 
-            debugMode = False
+            global debugMode = False
             sGwStatusMessage = "Debug mode DISABLED"
             iGwStatusCode = GW_STATUS_DEBUG_MODE_DISABLED
         oMessageParams = {"gwStatusCode": iGwStatusCode, "gwStatusMessage": sGwStatusMessage}
