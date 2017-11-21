@@ -312,7 +312,7 @@ while True:
     # Process pending push messsages #
     ##################################
     if (len(pushMessagesBuffer) > 0):
-        oPushMessage = pushMessagesBuffer.pop([0])
+        oPushMessage = pushMessagesBuffer.pop()
         # Encoded           
         oPushMessage_string = json.dumps(oPushMessage)
         # Decoded
@@ -320,8 +320,8 @@ while True:
 
         # Proccess push message
         sSlaveAddress = oPushMessage_decoded["messages"][0]["slaveAddress"]
-        iMessageCode = oPushMessage_decoded["messages"][0]["messageCode"]
-        iMessageData = oPushMessage_decoded["messages"][0]["messageData"]
+        iMessageCode = oPushMessage_decoded["messages"][0]["actionCode"]
+        iMessageData = oPushMessage_decoded["messages"][0]["actionData"]
         if (oPushMessage_decoded["messages"][0]["slaveAddress"] == "Master"):
             performMasterAction(iMessageCode, iMessageData)
         else: 
