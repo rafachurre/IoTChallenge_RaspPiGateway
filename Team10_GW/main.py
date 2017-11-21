@@ -164,20 +164,20 @@ def performMasterAction(iMessageCode, iMessageData):
 
 # ~ i2c communication
 def i2c_writeMessage(sSlaveAddress, iMessageCode, iMessageData):
-    i2c_writeCode(sSlaveAddress, iMessageCode)
-    if iMessageData is not None:
+    i2c_writeCode(int(sSlaveAddress, 16), iMessageCode)
+    if (iMessageData >= 0):
         # If there is data to send, send it just after sending the code
         time.sleep(i2c_writeWrite_interval)
-        i2c_writeCode(sSlaveAddress, iMessageData)
+        i2c_writeCode(int(sSlaveAddress, 16), iMessageData)
     return -1
 
 def i2c_writeCode(sSlaveAddress, iMessageCode):
-    bus.write_byte(sSlaveAddress, iMessageCode)
+    bus.write_byte(int(sSlaveAddress, 16), iMessageCode)
     # bus.write_byte_data(slaveAddress, 0, send_code)
     return -1
 
-def i2c_readCode():
-    read_code = bus.read_byte(slaveAddress)
+def i2c_readCode(sSlaveAddress):
+    read_code = bus.read_byte(int(sSlaveAddress, 16))
     # number = bus.read_byte_data(slaveAddress, 1)
     return read_code
 
