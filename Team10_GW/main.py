@@ -13,6 +13,7 @@ import datetime
 ####################
 # main loop sleep
 mainLoopSleepTime = 0.05
+debugMode = False
 
 # Styling for messages in the console
 class bMessageStyle:
