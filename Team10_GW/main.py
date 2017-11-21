@@ -40,7 +40,7 @@ getPushNotif_refreshFrequency = 10 # number if cycles before sending a GET reque
 # ~ DEVICE
 class deviceInfo:
     deviceId= "<DeviceID>"
-	token = "<token>"
+    token = "<token>"
 
 # ~ POST Messages
 class Team10_DevicePostMsg:
