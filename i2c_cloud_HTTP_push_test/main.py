@@ -55,7 +55,7 @@ bus = smbus.SMBus(0)
 # This is the address we setup in the Arduino Program
 slaveAddress = 0x04
 # Seconds after Write() wating to Read() the response
-i2c_writeRead_interval = 1
+i2c_writeRead_interval = 2
 
 # Collection of messages (constants)
 SLAVE_STATUS_BOX_OPEN = 1 # The box is open
