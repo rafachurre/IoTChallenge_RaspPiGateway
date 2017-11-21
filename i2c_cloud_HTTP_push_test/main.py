@@ -45,7 +45,7 @@ class oGetPushMessages:
     headers = {'Authorization': 'Bearer ' + token}
 
 # Seconds wating until next GET request to the Push Notification Service endpoint
-getPushNotif_refreshTime = 3
+getPushNotif_refreshTime = 2
 
 ##############
 # i2c CONFIG #
@@ -55,7 +55,7 @@ bus = smbus.SMBus(0)
 # This is the address we setup in the Arduino Program
 slaveAddress = 0x04
 # Seconds after Write() wating to Read() the response
-i2c_writeRead_interval = 2
+i2c_writeRead_interval = 1
 
 # Collection of messages (constants)
 SLAVE_STATUS_BOX_OPEN = 1 # The box is open
