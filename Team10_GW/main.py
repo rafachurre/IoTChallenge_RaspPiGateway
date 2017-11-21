@@ -193,7 +193,7 @@ def cloud_Post_DevicePostMsg(oMessageParams):
     currentTime = time.time()
     timestamp = datetime.datetime.fromtimestamp(currentTime).strftime('%Y-%m-%dT%H:%M:%S')
 
-    payload = {"messageType": Team10_DevicePostMsg.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oM$
+    payload = {"messageType": Team10_DevicePostMsg.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oMessageParams["slaveAddress"], "messageCode": oMessageParams["messageCode"], "messageData": oMessageParams["messageData"]}]}
     r = requests.post(Team10_DevicePostMsg.url, headers=Team10_DevicePostMsg.headers, data=json.dumps(payload))
     return r.json()
 
@@ -209,7 +209,7 @@ def cloud_Post_GWStatus(oMessageParams):
     currentTime = time.time()
     timestamp = datetime.datetime.fromtimestamp(currentTime).strftime('%Y-%m-%dT%H:%M:%S')
 
-    payload = {"messageType": Team10_GWStatus.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "gwStatusCode": oMessag$
+    payload = {"messageType": Team10_GWStatus.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "gwStatusCode": oMessageParams["gwStatusCode"], "gwStatusMessage": oMessageParams["gwStatusMessage"]}]}
     r = requests.post(Team10_GWStatus.url, headers=Team10_GWStatus.headers, data=json.dumps(payload))
     return r.json()
 
@@ -225,7 +225,7 @@ def cloud_Post_SlaveStatus(oMessageParams):
     currentTime = time.time()
     timestamp = datetime.datetime.fromtimestamp(currentTime).strftime('%Y-%m-%dT%H:%M:%S')
 
-    payload = {"messageType": Team10_SlaveStatus.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oMes$
+    payload = {"messageType": Team10_SlaveStatus.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oMessageParams["slaveAddress"], "slaveStatusCode": oMessageParams["slaveStatusCode"]}]}
     r = requests.post(Team10_SlaveStatus.url, headers=Team10_SlaveStatus.headers, data=json.dumps(payload))
     return r.json()
 
