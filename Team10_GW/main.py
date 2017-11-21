@@ -278,9 +278,9 @@ def print_cloudPostDone(response):
     cloud_Post_GWStatus(oMessageParams)
 
 def print_executionError(error):
-    print "EXECUTION ERROR: ", bMessageStyle.FAIL, response, bMessageStyle.ENDC
-    gwStatusMessage = "EXECUTION ERROR: ", response
-    oMessageParams = {"gwStatusCode": GW_STATUS_I2C_POST_DONE, "gwStatusMessage": gwStatusMessage}
+    print "EXECUTION ERROR: ", bMessageStyle.FAIL, error, bMessageStyle.ENDC
+    gwStatusMessage = "EXECUTION ERROR: ", error
+    oMessageParams = {"gwStatusCode": GW_STATUS_I2C_POST_ERROR, "gwStatusMessage": gwStatusMessage}
     cloud_Post_GWStatus(oMessageParams)
 
 
