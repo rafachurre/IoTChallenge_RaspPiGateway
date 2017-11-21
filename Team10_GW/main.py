@@ -164,20 +164,20 @@ def performMasterAction(iMessageCode, iMessageData):
 
 # ~ i2c communication
 def i2c_writeMessage(sSlaveAddress, iMessageCode, iMessageData):
-    i2c_writeCode(int(sSlaveAddress, 16), iMessageCode)
+    i2c_writeCode(int(str(sSlaveAddress), 16), iMessageCode)
     if (iMessageData >= 0):
         # If there is data to send, send it just after sending the code
         time.sleep(i2c_writeWrite_interval)
-        i2c_writeCode(int(sSlaveAddress, 16), iMessageData)
+        i2c_writeCode(int(str(sSlaveAddress), 16), iMessageData)
     return -1
 
 def i2c_writeCode(sSlaveAddress, iMessageCode):
-    bus.write_byte(int(sSlaveAddress, 16), iMessageCode)
+    bus.write_byte(int(str(sSlaveAddress), 16), iMessageCode)
     # bus.write_byte_data(slaveAddress, 0, send_code)
     return -1
 
 def i2c_readCode(sSlaveAddress):
-    read_code = bus.read_byte(int(sSlaveAddress, 16))
+    read_code = bus.read_byte(int(str(sSlaveAddress), 16))
     # number = bus.read_byte_data(slaveAddress, 1)
     return read_code
 
@@ -338,7 +338,7 @@ while True:
                 print_i2cMessageReceived(i2c_response_code)
 
             # Send response to cloud
-            oMessageParams = {"slaveAddress": slaveAddress, "messageCode": i2c_response_code, "messageData": 0 }
+            oMessageParams = {"slaveAddress": sSlaveAddress, "messageCode": i2c_response_code, "messageData": 0 }
             response = cloud_Post_DevicePostMsg(oMessageParams)
             if(debugMode):
                 print_cloudPostDone(response)
