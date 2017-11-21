@@ -111,6 +111,9 @@ GW_STATUS_I2C_MESSAGE_SENT = 202 # Message sent via i2c
 GW_STATUS_I2C_MESSAGE_READ = 203 # Message read via i2c
 GW_STATUS_I2C_POST_DONE = 204 # Data was posted in the Cloud Data Service
 
+GW_STATUS_I2C_POST_ERROR = 500 # Execution error
+
+
 # Messages dictionaries
 #----------------------
 i2cSlaveStatusMessagesDictionary = {
@@ -190,7 +193,7 @@ def cloud_Post_DevicePostMsg(oMessageParams):
     currentTime = time.time()
     timestamp = datetime.datetime.fromtimestamp(currentTime).strftime('%Y-%m-%dT%H:%M:%S')
 
-    payload = {"messageType": Team10_DevicePostMsg.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oMessageParams.slaveAddress, "messageCode": oMessageParams.messageCode, "messageData": oMessageParams.messageData}]}
+    payload = {"messageType": Team10_DevicePostMsg.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oM$
     r = requests.post(Team10_DevicePostMsg.url, headers=Team10_DevicePostMsg.headers, data=json.dumps(payload))
     return r.json()
 
@@ -206,7 +209,7 @@ def cloud_Post_GWStatus(oMessageParams):
     currentTime = time.time()
     timestamp = datetime.datetime.fromtimestamp(currentTime).strftime('%Y-%m-%dT%H:%M:%S')
 
-    payload = {"messageType": Team10_GWStatus.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "gwStatusCode": oMessageParams.gwStatusCode, "gwStatusMessage": oMessageParams.gwStatusMessage}]}
+    payload = {"messageType": Team10_GWStatus.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "gwStatusCode": oMessag$
     r = requests.post(Team10_GWStatus.url, headers=Team10_GWStatus.headers, data=json.dumps(payload))
     return r.json()
 
@@ -222,7 +225,7 @@ def cloud_Post_SlaveStatus(oMessageParams):
     currentTime = time.time()
     timestamp = datetime.datetime.fromtimestamp(currentTime).strftime('%Y-%m-%dT%H:%M:%S')
 
-    payload = {"messageType": Team10_SlaveStatus.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oMessageParams.slaveAddress, "slaveStatusCode": oMessageParams.slaveStatusCode}]}
+    payload = {"messageType": Team10_SlaveStatus.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oMes$
     r = requests.post(Team10_SlaveStatus.url, headers=Team10_SlaveStatus.headers, data=json.dumps(payload))
     return r.json()
 
