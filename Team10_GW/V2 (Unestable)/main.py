@@ -322,9 +322,9 @@ def print_i2cMessageSent(sSlaveAddress, iMessageCode):
         sConsoleMessage = "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, str(iMessageCode), "(SlaveAddress: ", sSlaveAddress, ")", bMessageStyle.ENDC
         sLogMessage = "\nMessage sent (from Master to Slave): ", i2cRequestMessagesDictionary[str(iMessageCode)], "(SlaveAddress: ", sSlaveAddress, ")"
 
-    print "".join(sConsoleMessage)
+    print sConsoleMessage
 
-    gwStatusMessage = "".join(("DEBUGGER: ", sLogMessage))
+    gwStatusMessage = "".join(("DEBUGGER: ", "".join(sLogMessage)))
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_SENT, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
     print "\nGW_Status POST - Response: ", r
@@ -339,9 +339,9 @@ def print_i2cMessageReceived(sSlaveAddress, iResponseCode):
         sConsoleMessage = "\nMessage read (from Slave ", sSlaveAddress, ") ", bMessageStyle.FAIL, str(iResponseCode), bMessageStyle.ENDC
         sLogMessage = "\nMessage read (from Slave ", sSlaveAddress, ") ", str(iResponseCode)
     
-    print "".join(sConsoleMessage)
+    print sConsoleMessage
 
-    gwStatusMessage = "".join(("DEBUGGER: ", sLogMessage))
+    gwStatusMessage = "".join(("DEBUGGER: ", "".join(sLogMessage)))
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_READ, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
     print "\nGW_Status POST - Response: ", r
@@ -352,49 +352,49 @@ def print_i2cBufferLenghtReceived(sSlaveAddress, iBufferLength):
     
     print "".join(sConsoleMessage)
 
-    gwStatusMessage = "".join(("DEBUGGER: ", sLogMessage))
+    gwStatusMessage = "".join(("DEBUGGER: ", "".join(sLogMessage)))
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_READ, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
     print "\nGW_Status POST - Response: ", r
 
 def print_cloudPostDone(response):
     print "POST RESPONSE: ", bMessageStyle.OKGREEN, response, bMessageStyle.ENDC
-    gwStatusMessage = "".join(("POST Response: ", response))
+    gwStatusMessage = "".join(("POST Response: ", str(response)))
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_POST_DONE, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
     print "\nGW_Status POST - Response: ", r
 
 def print_GetPushMsgsError(error):
     print bMessageStyle.FAIL, "ERROR GETTING PUSH MESSAGES: ", error, bMessageStyle.ENDC
-    gwStatusMessage = "".join(("ERROR GETTING PUSH MESSAGES: ", error))
+    gwStatusMessage = "".join(("ERROR GETTING PUSH MESSAGES: ", str(error)))
     oMessageParams = {"gwStatusCode": GW_STATUS_GET_PUSH_MSGS_ERROR, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
     print "\nGW_Status POST - Response: ", r
 
 def print_postDataToCloud(error):
     print bMessageStyle.FAIL, "ERROR POSTING DATA TO CLOUD: ", error, bMessageStyle.ENDC
-    gwStatusMessage = "".join(("ERROR POSTING DATA TO CLOUD: ", error))
+    gwStatusMessage = "".join(("ERROR POSTING DATA TO CLOUD: ", str(error)))
     oMessageParams = {"gwStatusCode": GW_STATUS_POST_DATA_ERROR, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
     print "\nGW_Status POST - Response: ", r
 
 def print_i2c_WriteMsgError(error):
     print bMessageStyle.FAIL, "ERROR WRITING IN I2C BUS: ", error, bMessageStyle.ENDC
-    gwStatusMessage = "".join(("ERROR WRITING IN I2C BUS: ", error))
+    gwStatusMessage = "".join(("ERROR WRITING IN I2C BUS: ", str(error)))
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_WRITE_ERROR, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
     print "\nGW_Status POST - Response: ", r
 
 def print_i2c_ReadMsgError(error):
     print bMessageStyle.FAIL, "ERROR READING FROM I2C BUS: ", error, bMessageStyle.ENDC
-    gwStatusMessage = "".join(("ERROR READING FROM I2C BUS: ", error))
+    gwStatusMessage = "".join(("ERROR READING FROM I2C BUS: ", str(error)))
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_READ_ERROR, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
     print "\nGW_Status POST - Response: ", r
 
-def print_i2c_SlaveBufferLength_Inconsistency(sSlaveAddress, iBufferLength):
-    print bMessageStyle.FAIL, "Inconsistency detected in slave: ", sSlaveAddress, " --> status_buffer_length=", slaveBufferLength, bMessageStyle.ENDC
-    gwStatusMessage = "".join(("Inconsistency detected in slave: ", sSlaveAddress, " --> status_buffer_length=", slaveBufferLength))
+def print_i2c_SlaveBufferLength_Inconsistency(sSlaveAddress, iSlaveBufferLength):
+    print bMessageStyle.FAIL, "Inconsistency detected in slave: ", sSlaveAddress, " --> status_buffer_length=", str(iSlaveBufferLength), bMessageStyle.ENDC
+    gwStatusMessage = "".join(("Inconsistency detected in slave: ", sSlaveAddress, " --> status_buffer_length=", str(iSlaveBufferLength)))
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_SLAVE_BUFFER_INCONSISTENCY, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
     print "\nGW_Status POST - Response: ", r
