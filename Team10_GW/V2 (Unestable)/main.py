@@ -199,7 +199,7 @@ def i2c_scanDevices():
                     hexAddress = "0x" + address
                     i2c_activeAddresses.append(hexAddress)
 
-    print_i2cScanDevices(devices)
+    print_i2cScanDevices(i2c_activeAddresses)
 
 def i2c_writeMessage(sSlaveAddress, iMessageCode, iMessageData):
     i2c_writeCode(int(str(sSlaveAddress), 16), iMessageCode)
