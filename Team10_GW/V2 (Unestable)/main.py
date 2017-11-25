@@ -85,6 +85,8 @@ i2c_activeAddresses = []
 i2c_slavesWithUpdates = []
 # Flag to fire a new scan
 i2c_pendingScan = True
+scanCounter = 0 # number of cycle waiting before scan
+scanFrecuency = 1000 # number of mainLoop cycles bere performing a new i2c_scan
 # loops waiting until the next read all cycle
 i2c_readAll_frecuency = 10 # number of "mainLoopSleepTime" cycles before a new readAll
 i2c_readAll_counter = 0.1 # Counter of waiting cycles 
@@ -368,7 +370,7 @@ def performMasterAction(iMessageCode, iMessageData):
         cloud_Post_GWStatus(oMessageParams)
 
     if (iMessageCode == GW_ACTION_SCAN_I2C_DEVICES):
-        i2c_scanDevices()
+        global i2c_pendingScan = True
 
 # Get Push Notifications
 def downloadPushMessages():
@@ -526,6 +528,14 @@ while True:
     uploadSlavesStatusUpdates()
 
     # Process pending push messsages #
-    ######################################
+    ##################################
     # Upload pending status updates
     proccessPendingPushMessages()
+
+    # Update i2c_scan counter #
+    ###########################
+    if (len(i2c_activeAddresses) <= 0 and scanCounter < scanFrecuency):
+        scanCounter += 1
+    else:
+        scanCounter = 0
+        i2c_pendingScan = True
