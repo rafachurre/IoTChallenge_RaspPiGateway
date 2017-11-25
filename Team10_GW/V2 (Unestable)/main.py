@@ -322,7 +322,7 @@ def print_i2cMessageSent(sSlaveAddress, iMessageCode):
         sConsoleMessage = "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, str(iMessageCode), "(SlaveAddress: ", sSlaveAddress, ")", bMessageStyle.ENDC
         sLogMessage = "\nMessage sent (from Master to Slave): ", i2cRequestMessagesDictionary[str(iMessageCode)], "(SlaveAddress: ", sSlaveAddress, ")"
 
-    print sConsoleMessage
+    print "".join(sConsoleMessage)
 
     gwStatusMessage = "".join(("DEBUGGER: ", "".join(sLogMessage)))
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_SENT, "gwStatusMessage": gwStatusMessage}
@@ -339,7 +339,7 @@ def print_i2cMessageReceived(sSlaveAddress, iResponseCode):
         sConsoleMessage = "\nMessage read (from Slave ", sSlaveAddress, ") ", bMessageStyle.FAIL, str(iResponseCode), bMessageStyle.ENDC
         sLogMessage = "\nMessage read (from Slave ", sSlaveAddress, ") ", str(iResponseCode)
     
-    print sConsoleMessage
+    print "".join(sConsoleMessage)
 
     gwStatusMessage = "".join(("DEBUGGER: ", "".join(sLogMessage)))
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_READ, "gwStatusMessage": gwStatusMessage}
