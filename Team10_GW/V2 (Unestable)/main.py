@@ -59,13 +59,13 @@ class Team10_GWStatus:
     url = "<data_service_endpoint>"
     messageTypeId = "<message_type>"
     headers = {'Authorization': 'Bearer ' + deviceInfo.token, 'Content-Type': 'application/json'}
-    # Message: {"messageType": messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "gwStatusCode": "", "gwStatusMessage": ""}]}
+    # Message: {"messageType": messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "gwStatusCode": 500, "gwStatusMessage": ""}]}
 
 class Team10_SlaveStatus:
     url = "<data_service_endpoint>"
     messageTypeId = "<message_type>"
     headers = {'Authorization': 'Bearer ' + deviceInfo.token, 'Content-Type': 'application/json'}
-    # Message: {"messageType": messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "slaveAddress": "", "slaveStatusCode": ""}]}
+    # Message: {"messageType": messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "slaveAddress": sSlaveAddress, "slaveStatusCode": 1}]}
     
 # ~ GET PUSH Messages
 pushMessagesBuffer = []
@@ -300,11 +300,11 @@ def cloud_Get_PushMsgs():
 #########################
 def print_i2cScanDevices(devices):
     gwStatusMessage = "i2c SCAN: ", "[", ','.join(devices), "]"
-    oGW_MessageParams = {"gwStatusCode": GW_STATUS_I2C_SCAN_COMPLETED, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oGW_MessageParams)
-    if(debugMode):
-        print "Scan completed. Detected devices: "
-        print "[", ','.join(devices), "]"
+    print "\nScan completed. Detected devices: [", ','.join(devices), "]"
+    oMessageParams = {"gwStatusCode": GW_STATUS_I2C_SCAN_COMPLETED, "gwStatusMessage": gwStatusMessage}
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
+        
 
 def print_i2cMessageSent(sSlaveAddress, iMessageCode):
     sConsoleMessage = ""
@@ -319,8 +319,9 @@ def print_i2cMessageSent(sSlaveAddress, iMessageCode):
     print "".join(sConsoleMessage)
 
     gwStatusMessage = "DEBUGGER: ", sLogMessage
-    oGW_MessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_SENT, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oGW_MessageParams)
+    oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_SENT, "gwStatusMessage": gwStatusMessage}
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
 
 def print_i2cMessageReceived(sSlaveAddress, iResponseCode):
     sConsoleMessage = ""
@@ -336,7 +337,8 @@ def print_i2cMessageReceived(sSlaveAddress, iResponseCode):
 
     gwStatusMessage = "DEBUGGER: ", sLogMessage
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_READ, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oMessageParams)
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
 
 def print_i2cBufferLenghtReceived(sSlaveAddress, iBufferLength):
     sConsoleMessage = "\nMessage read (from Slave: ", sSlaveAddress, ") ", bMessageStyle.BOLD, str(iBufferLength), bMessageStyle.ENDC
@@ -346,43 +348,50 @@ def print_i2cBufferLenghtReceived(sSlaveAddress, iBufferLength):
 
     gwStatusMessage = "DEBUGGER: ", sLogMessage
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_READ, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oMessageParams)
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
 
 def print_cloudPostDone(response):
     print "POST RESPONSE: ", bMessageStyle.OKGREEN, response, bMessageStyle.ENDC
     gwStatusMessage = "POST Response: ", response
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_POST_DONE, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oMessageParams)
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
 
 def print_GetPushMsgsError(error):
     print bMessageStyle.FAIL, "ERROR GETTING PUSH MESSAGES: ", error, bMessageStyle.ENDC
     gwStatusMessage = "ERROR GETTING PUSH MESSAGES: ", error
     oMessageParams = {"gwStatusCode": GW_STATUS_GET_PUSH_MSGS_ERROR, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oMessageParams)
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
 
 def print_postDataToCloud(error):
     print bMessageStyle.FAIL, "ERROR POSTING DATA TO CLOUD: ", error, bMessageStyle.ENDC
     gwStatusMessage = "ERROR POSTING DATA TO CLOUD: ", error
     oMessageParams = {"gwStatusCode": GW_STATUS_POST_DATA_ERROR, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oMessageParams)
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
 
 def print_i2c_WriteMsgError(error):
     print bMessageStyle.FAIL, "ERROR WRITING IN I2C BUS: ", error, bMessageStyle.ENDC
     gwStatusMessage = "ERROR WRITING IN I2C BUS: ", error
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_WRITE_ERROR, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oMessageParams)
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
 
 def print_i2c_ReadMsgError(error):
     print bMessageStyle.FAIL, "ERROR READING FROM I2C BUS: ", error, bMessageStyle.ENDC
     gwStatusMessage = "ERROR READING FROM I2C BUS: ", error
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_READ_ERROR, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oMessageParams)
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
 
 def print_i2c_SlaveBufferLength_Inconsistency(sSlaveAddress, iBufferLength):
     print bMessageStyle.FAIL, "Inconsistency detected in slave: ", sSlaveAddress, " --> status_buffer_length=", slaveBufferLength, bMessageStyle.ENDC
     gwStatusMessage = "Inconsistency detected in slave: ", sSlaveAddress, " --> status_buffer_length=", slaveBufferLength
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_SLAVE_BUFFER_INCONSISTENCY, "gwStatusMessage": gwStatusMessage}
-    cloud_Post_GWStatus(oMessageParams)
+    r = cloud_Post_GWStatus(oMessageParams)
+    print "\nGW_Status POST - Response: ", r
 
 
 # Runtime functions #
