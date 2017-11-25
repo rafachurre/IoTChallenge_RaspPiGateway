@@ -49,28 +49,34 @@ class deviceInfo:
     token = "<token>"
 
 # ~ POST Messages
+class postServiceEndpoint:
+    endpoint = "<endpointURL>" + deviceInfo.deviceId
+
 class Team10_SlaveAllStatusesMsg:
-    url = "<data_service_endpoint>"
+    url = postServiceEndpoint.endpoint
     messageTypeId = "<message_type>"
     headers = {'Authorization': 'Bearer ' + deviceInfo.token, 'Content-Type': 'application/json'}
     # Message:  {"messageType":messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "slaveAddress": sSlaveAddress, "slaveOpenCloseStatus":1,"slaveEmptyFullStatus":2,"slaveLEDStatus":3}]}
 
 class Team10_GWStatus:
-    url = "<data_service_endpoint>"
+    url = postServiceEndpoint.endpoint
     messageTypeId = "<message_type>"
     headers = {'Authorization': 'Bearer ' + deviceInfo.token, 'Content-Type': 'application/json'}
     # Message: {"messageType": messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "gwStatusCode": 500, "gwStatusMessage": ""}]}
 
 class Team10_SlaveStatus:
-    url = "<data_service_endpoint>"
+    url = postServiceEndpoint.endpoint
     messageTypeId = "<message_type>"
     headers = {'Authorization': 'Bearer ' + deviceInfo.token, 'Content-Type': 'application/json'}
     # Message: {"messageType": messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "slaveAddress": sSlaveAddress, "slaveStatusCode": 1}]}
     
 # ~ GET PUSH Messages
 pushMessagesBuffer = []
+class pushServiceEndpoint:
+    endpoint = "<endpointURL>" + deviceInfo.deviceId
+
 class Team10_PushToGW:
-    url = "<push_service_read_endpoint>"
+    url = pushServiceEndpoint.endpoint
     headers = {'Authorization': 'Bearer ' + deviceInfo.token}
 
 
