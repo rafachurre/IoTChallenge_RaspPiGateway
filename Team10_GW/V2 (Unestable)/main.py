@@ -398,7 +398,7 @@ def updateSlaveStatus(sSlaveAddress, iStatusCode):
     if(i2c_received_code == SLAVE_STATUS_BOX_OPEN or i2c_received_code == SLAVE_STATUS_BOX_CLOSED or i2c_received_code == SLAVE_STATUS_BOX_OPENCLOSED_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
             currentSlavesStatuses[str(sSlaveAddress)] = {}
-        #openClose_status = i2c_received_code - openClose_msgsCodes_offset
+        openClose_status = i2c_received_code - openClose_msgsCodes_offset
         currentSlavesStatuses[str(sSlaveAddress)]['openClose_status'] = openClose_status
 
     elif(i2c_received_code == SLAVE_STATUS_BOX_EMPTY or i2c_received_code == SLAVE_STATUS_BOX_FULL or i2c_received_code == SLAVE_STATUS_BOX_EMPTYFULL_UNKNOWN):
