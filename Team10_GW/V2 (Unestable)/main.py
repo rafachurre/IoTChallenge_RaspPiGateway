@@ -150,6 +150,8 @@ GW_STATUS_POST_DATA_ERROR = 501 # Error Postind Data in the cloud
 GW_STATUS_I2C_WRITE_ERROR = 502 # Error writing in i2c bus
 GW_STATUS_I2C_READ_ERROR = 503 # Error reading in i2c bus
 
+GW_STATUS_I2C_SLAVE_BUFFER_INCONSISTENCY = 600 # Slave status buffer has more than 10 items
+
 # Messages dictionaries
 #----------------------
 i2cSlaveStatusMessagesDictionary = {
@@ -292,10 +294,10 @@ def print_i2cMessageSent(sSlaveAddress, iMessageCode):
     sConsoleMessage = ""
     sLogMessage = ""
     if str(iMessageCode) in i2cRequestMessagesDictionary:
-        sConsoleMessage = "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(iMessageCode)], bMessageStyle.ENDC, "(SlaveAddress: ", sSlaveAddress, ")"
+        sConsoleMessage = "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, i2cRequestMessagesDictionary[str(iMessageCode)], "(SlaveAddress: ", sSlaveAddress, ")", bMessageStyle.ENDC
         sLogMessage = "\nMessage sent (from Master to Slave): ", i2cRequestMessagesDictionary[str(iMessageCode)], "(SlaveAddress: ", sSlaveAddress, ")"
     else:
-        sConsoleMessage = "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, str(iMessageCode), bMessageStyle.ENDC, "(SlaveAddress: ", sSlaveAddress, ")"
+        sConsoleMessage = "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, str(iMessageCode), "(SlaveAddress: ", sSlaveAddress, ")", bMessageStyle.ENDC
         sLogMessage = "\nMessage sent (from Master to Slave): ", i2cRequestMessagesDictionary[str(iMessageCode)], "(SlaveAddress: ", sSlaveAddress, ")"
 
     print sConsoleMessage
@@ -327,27 +329,33 @@ def print_cloudPostDone(response):
     cloud_Post_GWStatus(oMessageParams)
 
 def print_GetPushMsgsError(error):
-    print "ERROR GETTING PUSH MESSAGES: ", bMessageStyle.FAIL, error, bMessageStyle.ENDC
+    print bMessageStyle.FAIL, "ERROR GETTING PUSH MESSAGES: ", error, bMessageStyle.ENDC
     gwStatusMessage = "ERROR GETTING PUSH MESSAGES: ", error
     oMessageParams = {"gwStatusCode": GW_STATUS_GET_PUSH_MSGS_ERROR, "gwStatusMessage": gwStatusMessage}
     cloud_Post_GWStatus(oMessageParams)
 
 def print_postDataToCloud(error):
-    print "ERROR POSTING DATA TO CLOUD: ", bMessageStyle.FAIL, error, bMessageStyle.ENDC
+    print bMessageStyle.FAIL, "ERROR POSTING DATA TO CLOUD: ", error, bMessageStyle.ENDC
     gwStatusMessage = "ERROR POSTING DATA TO CLOUD: ", error
     oMessageParams = {"gwStatusCode": GW_STATUS_POST_DATA_ERROR, "gwStatusMessage": gwStatusMessage}
     cloud_Post_GWStatus(oMessageParams)
 
 def print_i2c_WriteMsgError(error):
-    print "ERROR WRITING IN I2C BUS: ", bMessageStyle.FAIL, error, bMessageStyle.ENDC
+    print bMessageStyle.FAIL, "ERROR WRITING IN I2C BUS: ", error, bMessageStyle.ENDC
     gwStatusMessage = "ERROR WRITING IN I2C BUS: ", error
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_WRITE_ERROR, "gwStatusMessage": gwStatusMessage}
     cloud_Post_GWStatus(oMessageParams)
 
 def print_i2c_ReadMsgError(error):
-    print "ERROR READING FROM I2C BUS: ", bMessageStyle.FAIL, error, bMessageStyle.ENDC
+    print bMessageStyle.FAIL, "ERROR READING FROM I2C BUS: ", error, bMessageStyle.ENDC
     gwStatusMessage = "ERROR READING FROM I2C BUS: ", error
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_READ_ERROR, "gwStatusMessage": gwStatusMessage}
+    cloud_Post_GWStatus(oMessageParams)
+
+def print_i2c_SlaveBufferLength_Inconsistency(sSlaveAddress, iBufferLength):
+    print bMessageStyle.FAIL, "Inconsistency detected in slave: ", sSlaveAddress, " --> status_buffer_length=", slaveBufferLength, bMessageStyle.ENDC
+    gwStatusMessage = "Inconsistency detected in slave: ", sSlaveAddress, " --> status_buffer_length=", slaveBufferLength
+    oMessageParams = {"gwStatusCode": GW_STATUS_I2C_SLAVE_BUFFER_INCONSISTENCY, "gwStatusMessage": gwStatusMessage}
     cloud_Post_GWStatus(oMessageParams)
 
 
@@ -427,9 +435,13 @@ def uploadSlavesStatusUpdates():
 
 # Read data in those devices with pending data waing in the buffer
 def readAvalableDevices():
+    if(debugMode):
+        print "Reading all available devices: ", str(i2c_activeAddresses)
     if (len(i2c_activeAddresses) > 0):
         for sSlaveAddress in i2c_activeAddresses:
             # Prepare the buffer index in the slave to be read
+            if(debugMode):
+                print "Writing  DATA_REQUEST_STATUS_BUFFER_INDEX in device: ", sSlaveAddress
             try:
                 i2c_writeMessage(sSlaveAddress, DATA_REQUEST_STATUS_BUFFER_INDEX, NO_DATA_IN_MESSAGE)
                 if(debugMode):
@@ -442,6 +454,8 @@ def readAvalableDevices():
 
             # Read Response Code (i2c)
             slaveBufferLength = 0
+            if(debugMode):
+                print "Reading Status_Buffer_Length from slave: ", sSlaveAddress
             try:
                 slaveBufferLength = i2c_readCode(sSlaveAddress)
                 if(debugMode):
@@ -451,6 +465,8 @@ def readAvalableDevices():
 
             # if slaveBuffer is greater than 10, there is an inconsistency. Clear the slave buffer and read all statuses again
             if(slaveBufferLength > 10):
+                if(debugMode):
+                    print_i2c_SlaveBufferLength_Inconsistency(sSlaveAddress, iBufferLength)
                 # Reset Slave buffer
                 try:
                     i2c_writeMessage(sSlaveAddress, ACTION_REQUEST_CLEAR_STATUS_BUFFER, NO_DATA_IN_MESSAGE)
@@ -461,6 +477,8 @@ def readAvalableDevices():
 
             # If slaveBuffer is lower than 10 and greater than 0, then read the
             elif(slaveBufferLength > 0):
+                if(debugMode):
+                    print "Reading ", slaveBufferLength, " pending items from slave: ", sSlaveAddress
                 # Add the slave address to the buffer
                 updateSlaveWithUpdatesBuffer(sSlaveAddress)
                 # Read all the pending status codes and update the list
