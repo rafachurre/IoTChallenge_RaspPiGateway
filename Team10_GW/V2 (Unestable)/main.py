@@ -311,11 +311,21 @@ def print_i2cMessageReceived(sSlaveAddress, iResponseCode):
     sConsoleMessage = ""
     sLogMessage = ""
     if str(iResponseCode) in i2cSlaveStatusMessagesDictionary:
-        sConsoleMessage = "\nMessage read (from Slave to Master): ", bMessageStyle.FAIL, i2cSlaveStatusMessagesDictionary[str(iResponseCode)], bMessageStyle.ENDC
-        sLogMessage = "\nMessage read (from Slave to Master): ", i2cSlaveStatusMessagesDictionary[str(iResponseCode)]
+        sConsoleMessage = "\nMessage read (from Slave ", sSlaveAddress, ")", bMessageStyle.FAIL, i2cSlaveStatusMessagesDictionary[str(iResponseCode)], bMessageStyle.ENDC
+        sLogMessage = "\nMessage read (from Slave ", sSlaveAddress, ")", i2cSlaveStatusMessagesDictionary[str(iResponseCode)]
     else:
-        sConsoleMessage = "\nMessage sent (from Master to Slave): ", bMessageStyle.FAIL, str(iResponseCode), bMessageStyle.ENDC
-        sLogMessage = "\nMessage sent (from Master to Slave): ", str(iResponseCode)
+        sConsoleMessage = "\nMessage read (from Slave ", sSlaveAddress, ")", bMessageStyle.FAIL, str(iResponseCode), bMessageStyle.ENDC
+        sLogMessage = "\nMessage read (from Slave ", sSlaveAddress, ")", str(iResponseCode)
+    
+    print "".join(sConsoleMessage)
+
+    gwStatusMessage = "DEBUGGER: ", sLogMessage
+    oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_READ, "gwStatusMessage": gwStatusMessage}
+    cloud_Post_GWStatus(oMessageParams)
+
+def print_i2cBufferLenghtReceived(sSlaveAddress, iBufferLength):
+    sConsoleMessage = "\nMessage read (from Slave: ", sSlaveAddress, ")", bMessageStyle.BOLD, str(iBufferLength), bMessageStyle.ENDC
+    sLogMessage = "\nMessage read (from Slave: ", sSlaveAddress, ")", str(iBufferLength)
     
     print "".join(sConsoleMessage)
 
@@ -425,8 +435,8 @@ def updateSlaveStatus(sSlaveAddress, iStatusCode):
 def uploadSlavesStatusUpdates():
     if (len(i2c_slavesWithUpdates) > 0):
         for i in range(0, len(i2c_slavesWithUpdates)):
-            deviceAddress = i2c_slavesWithUpdates.pop()
-            oMessageParams = { "slaveAddress": deviceAddress , "slaveOpenCloseStatus": currentSlavesStatuses[str(sSlaveAddress)]['openClose_status'], "slaveEmptyFullStatus": currentSlavesStatuses[str(sSlaveAddress)]['emptyFull_status'], "slaveLEDStatus": currentSlavesStatuses[str(sSlaveAddress)]['LED_status'] }
+            sSlaveAddress = i2c_slavesWithUpdates.pop()
+            oMessageParams = { "slaveAddress": sSlaveAddress , "slaveOpenCloseStatus": currentSlavesStatuses[str(sSlaveAddress)]['openClose_status'], "slaveEmptyFullStatus": currentSlavesStatuses[str(sSlaveAddress)]['emptyFull_status'], "slaveLEDStatus": currentSlavesStatuses[str(sSlaveAddress)]['LED_status'] }
             try:
                 response = cloud_Post_SlaveAllStatusesMsg(oMessageParams)
                 if(debugMode):
@@ -437,12 +447,12 @@ def uploadSlavesStatusUpdates():
 # Read data in those devices with pending data waing in the buffer
 def readAvalableDevices():
     if(debugMode):
-        print "Reading all available devices: ", str(i2c_activeAddresses)
+        print "\nReading all available devices: ", str(i2c_activeAddresses)
     if (len(i2c_activeAddresses) > 0):
         for sSlaveAddress in i2c_activeAddresses:
             # Prepare the buffer index in the slave to be read
             if(debugMode):
-                print "Writing  DATA_REQUEST_STATUS_BUFFER_INDEX in device: ", sSlaveAddress
+                print "\nWriting DATA_REQUEST_STATUS_BUFFER_INDEX in device: ", sSlaveAddress
             try:
                 i2c_writeMessage(sSlaveAddress, DATA_REQUEST_STATUS_BUFFER_INDEX, NO_DATA_IN_MESSAGE)
                 if(debugMode):
@@ -456,7 +466,7 @@ def readAvalableDevices():
             # Read Response Code (i2c)
             slaveBufferLength = 0
             if(debugMode):
-                print "Reading Status_Buffer_Length from slave: ", sSlaveAddress
+                print "\nReading Status_Buffer_Length from slave: ", sSlaveAddress
             try:
                 slaveBufferLength = i2c_readCode(sSlaveAddress)
                 if(debugMode):
@@ -479,7 +489,7 @@ def readAvalableDevices():
             # If slaveBuffer is lower than 10 and greater than 0, then read the
             elif(slaveBufferLength > 0):
                 if(debugMode):
-                    print "Reading ", slaveBufferLength, " pending items from slave: ", sSlaveAddress
+                    print "\nReading ", slaveBufferLength, " pending items from slave: ", sSlaveAddress
                 # Add the slave address to the buffer
                 updateSlaveWithUpdatesBuffer(sSlaveAddress)
                 # Read all the pending status codes and update the list
