@@ -49,11 +49,11 @@ class deviceInfo:
     token = "<token>"
 
 # ~ POST Messages
-class Team10_DevicePostMsg:
+class Team10_SlaveAllStatusesMsg:
     url = "<data_service_endpoint>"
     messageTypeId = "<message_type>"
     headers = {'Authorization': 'Bearer ' + deviceInfo.token, 'Content-Type': 'application/json'}
-    # Message: {"messageType": messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "slaveAddress": "", "messageCode": "", "messageData": ""}]}
+    # Message:  {"messageType":messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "slaveAddress": sSlaveAddress, "slaveOpenCloseStatus":1,"slaveEmptyFullStatus":2,"slaveLEDStatus":3}]}
 
 class Team10_GWStatus:
     url = "<data_service_endpoint>"
@@ -253,8 +253,8 @@ def cloud_Post_SlaveAllStatusesMsg(oMessageParams):
     currentTime = time.time()
     timestamp = datetime.datetime.fromtimestamp(currentTime).strftime('%Y-%m-%dT%H:%M:%S')
 
-    payload = {"messageType": Team10_DevicePostMsg.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oMessageParams["slaveAddress"], "slaveOpenCloseStatus": oMessageParams["slaveOpenCloseStatus"], "slaveEmptyFullStatus": oMessageParams["slaveEmptyFullStatus"], "slaveLEDStatus": oMessageParams["slaveLEDStatus"]}]}
-    r = requests.post(Team10_DevicePostMsg.url, headers=Team10_DevicePostMsg.headers, data=json.dumps(payload))
+    payload = {"messageType": Team10_SlaveAllStatusesMsg.messageTypeId, "messages":[{"timestamp": timestamp, "gwDeviceId": deviceInfo.deviceId, "slaveAddress": oMessageParams["slaveAddress"], "slaveOpenCloseStatus": oMessageParams["slaveOpenCloseStatus"], "slaveEmptyFullStatus": oMessageParams["slaveEmptyFullStatus"], "slaveLEDStatus": oMessageParams["slaveLEDStatus"]}]}
+    r = requests.post(Team10_SlaveAllStatusesMsg.url, headers=Team10_SlaveAllStatusesMsg.headers, data=json.dumps(payload))
     return r.json()
 
 def cloud_Post_GWStatus(oMessageParams):
