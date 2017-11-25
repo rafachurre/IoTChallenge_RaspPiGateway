@@ -150,7 +150,7 @@ GW_STATUS_I2C_READ_ERROR = 503 # Error reading in i2c bus
 # Messages dictionaries
 #----------------------
 i2cSlaveStatusMessagesDictionary = {
-    "0": "No data waiting to be read in the slave"
+    "0": "No data waiting to be read in the slave",
     "1": "The box is open",
     "2": "The box is closed",
     "3": "Can't determine if the box is open or closed. Some error may happened",
