@@ -204,6 +204,18 @@ def i2c_scanDevices():
 
     print_i2cScanDevices(i2c_activeAddresses)
 
+def i2c_forceReadAllSlavesStatuses():
+    # Prepare the buffer index in the slave to be read
+    if(debugMode):
+        print "\nWriting DATA_REQUEST_GET_ALL_STATUSES in all devices"
+    for sSlaveAddress in i2c_activeAddresses:
+        try:
+            i2c_writeCode(sSlaveAddress, DATA_REQUEST_GET_ALL_STATUSES)
+            if(debugMode):
+                print_i2cMessageSent(sSlaveAddress, DATA_REQUEST_GET_ALL_STATUSES)
+        except:
+            print_i2c_WriteMsgError(sys.exc_info()[0])
+
 def i2c_writeMessage(sSlaveAddress, iMessageCode, iMessageData):
     i2c_writeCode(int(str(sSlaveAddress), 16), iMessageCode)
     if (iMessageData >= 0):
@@ -311,11 +323,11 @@ def print_i2cMessageReceived(sSlaveAddress, iResponseCode):
     sConsoleMessage = ""
     sLogMessage = ""
     if str(iResponseCode) in i2cSlaveStatusMessagesDictionary:
-        sConsoleMessage = "\nMessage read (from Slave ", sSlaveAddress, ")", bMessageStyle.FAIL, i2cSlaveStatusMessagesDictionary[str(iResponseCode)], bMessageStyle.ENDC
-        sLogMessage = "\nMessage read (from Slave ", sSlaveAddress, ")", i2cSlaveStatusMessagesDictionary[str(iResponseCode)]
+        sConsoleMessage = "\nMessage read (from Slave ", sSlaveAddress, ") ", bMessageStyle.FAIL, i2cSlaveStatusMessagesDictionary[str(iResponseCode)], bMessageStyle.ENDC
+        sLogMessage = "\nMessage read (from Slave ", sSlaveAddress, ") ", i2cSlaveStatusMessagesDictionary[str(iResponseCode)]
     else:
-        sConsoleMessage = "\nMessage read (from Slave ", sSlaveAddress, ")", bMessageStyle.FAIL, str(iResponseCode), bMessageStyle.ENDC
-        sLogMessage = "\nMessage read (from Slave ", sSlaveAddress, ")", str(iResponseCode)
+        sConsoleMessage = "\nMessage read (from Slave ", sSlaveAddress, ") ", bMessageStyle.FAIL, str(iResponseCode), bMessageStyle.ENDC
+        sLogMessage = "\nMessage read (from Slave ", sSlaveAddress, ") ", str(iResponseCode)
     
     print "".join(sConsoleMessage)
 
@@ -324,8 +336,8 @@ def print_i2cMessageReceived(sSlaveAddress, iResponseCode):
     cloud_Post_GWStatus(oMessageParams)
 
 def print_i2cBufferLenghtReceived(sSlaveAddress, iBufferLength):
-    sConsoleMessage = "\nMessage read (from Slave: ", sSlaveAddress, ")", bMessageStyle.BOLD, str(iBufferLength), bMessageStyle.ENDC
-    sLogMessage = "\nMessage read (from Slave: ", sSlaveAddress, ")", str(iBufferLength)
+    sConsoleMessage = "\nMessage read (from Slave: ", sSlaveAddress, ") ", bMessageStyle.BOLD, str(iBufferLength), bMessageStyle.ENDC
+    sLogMessage = "\nMessage read (from Slave: ", sSlaveAddress, ") ", str(iBufferLength)
     
     print "".join(sConsoleMessage)
 
@@ -470,7 +482,7 @@ def readAvalableDevices():
             try:
                 slaveBufferLength = i2c_readCode(sSlaveAddress)
                 if(debugMode):
-                    print_i2cMessageReceived(sSlaveAddress, slaveBufferLength)
+                    print_i2cBufferLenghtReceived(sSlaveAddress, slaveBufferLength)
             except:
                 print_i2c_ReadMsgError(sys.exc_info()[0])
 
@@ -539,11 +551,6 @@ def proccessPendingPushMessages():
 # MAIN LOOP #
 #############
 while True:
-    # Check is there is a pending device scan #
-    ###########################################
-    if(i2c_pendingScan):
-        i2c_pendingScan = False
-        i2c_scanDevices()
 
     time.sleep(mainLoopSleepTime)
 
@@ -558,6 +565,14 @@ while True:
     else:
         # Update counter
         getPushNotif_cyclesCounter += 1
+
+    # Check is there is a pending device scan #
+    ###########################################
+    if(i2c_pendingScan):
+        i2c_pendingScan = False
+        i2c_scanDevices()
+        i2c_forceReadAllSlavesStatuses()
+
 
     # Read Slaves statuses #
     ########################
