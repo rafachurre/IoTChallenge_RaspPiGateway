@@ -452,7 +452,7 @@ def readAvalableDevices():
                 print_i2c_ReadMsgError(sys.exc_info()[0])
 
             # if slaveBuffer is greater than 10, there is an inconsistency. Clear the slave buffer and read all statuses again
-                if(slaveBufferLength > 10):
+            if(slaveBufferLength > 10):
                 # Reset Slave buffer
                 try:
                     i2c_writeMessage(sSlaveAddress, ACTION_REQUEST_CLEAR_STATUS_BUFFER, NO_DATA_IN_MESSAGE)
