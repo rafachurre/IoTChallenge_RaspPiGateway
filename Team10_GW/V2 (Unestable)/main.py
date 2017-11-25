@@ -394,26 +394,23 @@ def updateSlaveWithUpdatesBuffer(sSlaveAddress):
 
 # update currentSlavesStatuses ==> currentSlavesStatuses[str(sSlaveAddress)][statusName] WHERE statusName == 'openClose_status' || 'emptyFull_status' || 'LED_status'
 def updateSlaveStatus(sSlaveAddress, iStatusCode):
+    global currentSlavesStatuses
     if(i2c_received_code == SLAVE_STATUS_BOX_OPEN or i2c_received_code == SLAVE_STATUS_BOX_CLOSED or i2c_received_code == SLAVE_STATUS_BOX_OPENCLOSED_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
-            global currentSlavesStatuses
             currentSlavesStatuses[str(sSlaveAddress)] = {}
-        global currentSlavesStatuses
-        currentSlavesStatuses[str(sSlaveAddress)]['openClose_status'] = i2c_received_code - openClose_msgsCodes_offset
+        openClose_status = i2c_received_code - openClose_msgsCodes_offset
+        currentSlavesStatuses[str(sSlaveAddress)]['openClose_status'] = openClose_status
     else if(i2c_received_code == SLAVE_STATUS_BOX_EMPTY or i2c_received_code == SLAVE_STATUS_BOX_FULL or i2c_received_code == SLAVE_STATUS_BOX_EMPTYFULL_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
-            global currentSlavesStatuses
             currentSlavesStatuses[str(sSlaveAddress)] = {}
-        global currentSlavesStatuses
-        currentSlavesStatuses[str(sSlaveAddress)]['emptyFull_status'] = i2c_received_code - emptyFull_msgsCodes_offset
+        emptyFull_status = i2c_received_code - emptyFull_msgsCodes_offset
+        currentSlavesStatuses[str(sSlaveAddress)]['emptyFull_status'] = emptyFull_status
         
     else if(i2c_received_code == SLAVE_STATUS_LED_BLINKING or i2c_received_code == SLAVE_STATUS_LED_OFF or i2c_received_code == SLAVE_STATUS_LED_BLINKINGOFF_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
-            global currentSlavesStatuses
             currentSlavesStatuses[str(sSlaveAddress)] = {}
-        global currentSlavesStatuses
-        currentSlavesStatuses[str(sSlaveAddress)]['LED_status'] = i2c_received_code - LED_msgsCodes_offset
-
+        LED_status = i2c_received_code - LED_msgsCodes_offset
+        currentSlavesStatuses[str(sSlaveAddress)]['LED_status'] = LED_status
 # If there are status updates pending to be posted in the cloud, send them
 def uploadSlavesStatusUpdates():
     if (len(i2c_slavesWithUpdates) > 0):
@@ -461,7 +458,7 @@ def readAvalableDevices():
                 except:
                     print_i2c_WriteMsgError(sys.exc_info()[0])
 
-            # If slaveBuffer is lower than 10 and greater than 0, then read the messages
+            # If slaveBuffer is lower than 10 and greater than 0, then read the
             else if(slaveBufferLength > 0):
                 # Add the slave address to the buffer
                 updateSlaveWithUpdatesBuffer(sSlaveAddress)
