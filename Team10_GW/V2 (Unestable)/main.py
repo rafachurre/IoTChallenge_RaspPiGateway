@@ -299,7 +299,7 @@ def cloud_Get_PushMsgs():
 # Console log functions #
 #########################
 def print_i2cScanDevices(devices):
-    gwStatusMessage = "i2c SCAN: ", "[", ','.join(devices), "]"
+    gwStatusMessage = "".join("i2c SCAN: ", "[", ','.join(devices), "]")
     print "\nScan completed. Detected devices: [", ','.join(devices), "]"
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_SCAN_COMPLETED, "gwStatusMessage": gwStatusMessage}
     r = cloud_Post_GWStatus(oMessageParams)
