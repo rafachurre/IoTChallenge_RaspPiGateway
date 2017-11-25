@@ -189,7 +189,9 @@ i2cRequestMessagesDictionary = {
 ###############################
 def i2c_scanDevices():
     global i2c_activeAddresses
+    global currentSlavesStatuses
     i2c_activeAddresses = []
+    currentSlavesStatuses = []
     p = subprocess.Popen(['i2cdetect', '-y','0'],stdout=subprocess.PIPE,)
     #cmdout = str(p.communicate())
 
@@ -201,6 +203,7 @@ def i2c_scanDevices():
                 if address != "--":
                     hexAddress = "0x" + address
                     i2c_activeAddresses.append(hexAddress)
+                    currentSlavesStatuses[str(hexAddress)] = {}
 
     print_i2cScanDevices(i2c_activeAddresses)
 
