@@ -86,9 +86,9 @@ i2c_slavesWithUpdates = []
 # Flag to fire a new scan
 i2c_pendingScan = True
 scanCounter = 0 # number of cycle waiting before scan
-scanFrecuency = 10000 # number of mainLoop cycles bere performing a new i2c_scan
+scanFrequency = 10000 # number of mainLoop cycles bere performing a new i2c_scan
 # loops waiting until the next read all cycle
-i2c_readAll_frecuency = 10 # number of "mainLoopSleepTime" cycles before a new readAll
+i2c_readAll_frequency = 10 # number of "mainLoopSleepTime" cycles before a new readAll
 i2c_readAll_counter = 0.1 # Counter of waiting cycles 
 
 # Seconds after Write() wating to Read() the response
@@ -429,22 +429,22 @@ def updateSlaveWithUpdatesBuffer(sSlaveAddress):
 # update currentSlavesStatuses, currentSlavesStatuses[str(sSlaveAddress)][statusName] WHERE statusName == 'openClose_status' or 'emptyFull_status' or 'LED_status'
 def updateSlaveStatus(sSlaveAddress, iStatusCode):
     global currentSlavesStatuses
-    if(i2c_received_code == SLAVE_STATUS_BOX_OPEN or i2c_received_code == SLAVE_STATUS_BOX_CLOSED or i2c_received_code == SLAVE_STATUS_BOX_OPENCLOSED_UNKNOWN):
+    if(iStatusCode == SLAVE_STATUS_BOX_OPEN or iStatusCode == SLAVE_STATUS_BOX_CLOSED or iStatusCode == SLAVE_STATUS_BOX_OPENCLOSED_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
             currentSlavesStatuses[str(sSlaveAddress)] = {}
-        openClose_status = i2c_received_code - openClose_msgsCodes_offset
+        openClose_status = iStatusCode - openClose_msgsCodes_offset
         currentSlavesStatuses[str(sSlaveAddress)]['openClose_status'] = openClose_status
 
-    elif(i2c_received_code == SLAVE_STATUS_BOX_EMPTY or i2c_received_code == SLAVE_STATUS_BOX_FULL or i2c_received_code == SLAVE_STATUS_BOX_EMPTYFULL_UNKNOWN):
+    elif(iStatusCode == SLAVE_STATUS_BOX_EMPTY or iStatusCode == SLAVE_STATUS_BOX_FULL or iStatusCode == SLAVE_STATUS_BOX_EMPTYFULL_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
             currentSlavesStatuses[str(sSlaveAddress)] = {}
-        emptyFull_status = i2c_received_code - emptyFull_msgsCodes_offset
+        emptyFull_status = iStatusCode - emptyFull_msgsCodes_offset
         currentSlavesStatuses[str(sSlaveAddress)]['emptyFull_status'] = emptyFull_status
         
-    elif(i2c_received_code == SLAVE_STATUS_LED_BLINKING or i2c_received_code == SLAVE_STATUS_LED_OFF or i2c_received_code == SLAVE_STATUS_LED_BLINKINGOFF_UNKNOWN):
+    elif(iStatusCode == SLAVE_STATUS_LED_BLINKING or iStatusCode == SLAVE_STATUS_LED_OFF or iStatusCode == SLAVE_STATUS_LED_BLINKINGOFF_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
             currentSlavesStatuses[str(sSlaveAddress)] = {}
-        LED_status = i2c_received_code - LED_msgsCodes_offset
+        LED_status = iStatusCode - LED_msgsCodes_offset
         currentSlavesStatuses[str(sSlaveAddress)]['LED_status'] = LED_status
 # If there are status updates pending to be posted in the cloud, send them
 def uploadSlavesStatusUpdates():
@@ -579,7 +579,7 @@ while True:
 
     # Read Slaves statuses #
     ########################
-    if (i2c_readAll_counter >= i2c_readAll_frecuency):
+    if (i2c_readAll_counter >= i2c_readAll_frequency):
         # Update counter
         i2c_readAll_counter = 0
         # Read devices available in the bus
@@ -600,7 +600,7 @@ while True:
 
     # Update i2c_scan counter #
     ###########################
-    if (len(i2c_activeAddresses) <= 0 and scanCounter < scanFrecuency):
+    if (len(i2c_activeAddresses) <= 0 and scanCounter < scanFrequency):
         scanCounter += 1
     elif (len(i2c_activeAddresses) <= 0 ):
         scanCounter = 0
