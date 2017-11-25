@@ -534,7 +534,7 @@ def readAvalableDevices():
 
 def proccessPendingPushMessages():
     if (len(pushMessagesBuffer) > 0):
-        for i in range(0, slaveBufferLength):
+        for i in range(0, len(pushMessagesBuffer)):
             oPushMessage = pushMessagesBuffer.pop()
             # Encoded           
             oPushMessage_string = json.dumps(oPushMessage)
