@@ -392,7 +392,7 @@ def updateSlaveWithUpdatesBuffer(sSlaveAddress):
     global i2c_slavesWithUpdates
     i2c_slavesWithUpdates.append(sSlaveAddress)
 
-# update currentSlavesStatuses ==> currentSlavesStatuses[str(sSlaveAddress)][statusName] WHERE statusName == 'openClose_status' || 'emptyFull_status' || 'LED_status'
+# update currentSlavesStatuses, currentSlavesStatuses[str(sSlaveAddress)][statusName] WHERE statusName == 'openClose_status' or 'emptyFull_status' or 'LED_status'
 def updateSlaveStatus(sSlaveAddress, iStatusCode):
     global currentSlavesStatuses
     if(i2c_received_code == SLAVE_STATUS_BOX_OPEN or i2c_received_code == SLAVE_STATUS_BOX_CLOSED or i2c_received_code == SLAVE_STATUS_BOX_OPENCLOSED_UNKNOWN):
