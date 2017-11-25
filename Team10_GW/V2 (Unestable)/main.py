@@ -475,7 +475,7 @@ def readAvalableDevices():
                         print_i2c_ReadMsgError(sys.exc_info()[0])
                     
                     if(i2c_received_code != SLAVE_NO_BUFFER_DATA):
-                        updateSlaveStatus(sSlaveAddress, i2c_received_code):
+                        updateSlaveStatus(sSlaveAddress, i2c_received_code)
                     # Sleep i2c_readRead_interval seconds
                     time.sleep(i2c_readRead_interval)
 
