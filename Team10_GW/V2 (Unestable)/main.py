@@ -188,13 +188,13 @@ def i2c_scanDevices():
     #cmdout = str(p.communicate())
 
     for i in range(0,9):
-    l = str(p.stdout.readline())
-    for match in re.finditer("[0-9][0-9]:.*[0-9][0-9]", l):
-        w = l.split(":")[1].split()
-        for address in w:
-            if address != "--":
-                hexAddress = "0x" + address
-                i2c_activeAddresses.append(hexAddress)
+        l = str(p.stdout.readline())
+        for match in re.finditer("[0-9][0-9]:.*[0-9][0-9]", l):
+            w = l.split(":")[1].split()
+            for address in w:
+                if address != "--":
+                    hexAddress = "0x" + address
+                    i2c_activeAddresses.append(hexAddress)
 
     print_i2cScanDevices(devices)
 
