@@ -188,6 +188,7 @@ i2cRequestMessagesDictionary = {
 # i2c communication functions #
 ###############################
 def i2c_scanDevices():
+    global i2c_activeAddresses
     i2c_activeAddresses = []
     p = subprocess.Popen(['i2cdetect', '-y','0'],stdout=subprocess.PIPE,)
     #cmdout = str(p.communicate())
