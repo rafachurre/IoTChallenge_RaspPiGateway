@@ -86,7 +86,7 @@ i2c_slavesWithUpdates = []
 # Flag to fire a new scan
 i2c_pendingScan = True
 scanCounter = 0 # number of cycle waiting before scan
-scanFrecuency = 1000 # number of mainLoop cycles bere performing a new i2c_scan
+scanFrecuency = 10000 # number of mainLoop cycles bere performing a new i2c_scan
 # loops waiting until the next read all cycle
 i2c_readAll_frecuency = 10 # number of "mainLoopSleepTime" cycles before a new readAll
 i2c_readAll_counter = 0.1 # Counter of waiting cycles 
@@ -301,7 +301,7 @@ def print_i2cMessageSent(sSlaveAddress, iMessageCode):
         sConsoleMessage = "\nMessage sent (from Master to Slave): ", bMessageStyle.OKGREEN, str(iMessageCode), "(SlaveAddress: ", sSlaveAddress, ")", bMessageStyle.ENDC
         sLogMessage = "\nMessage sent (from Master to Slave): ", i2cRequestMessagesDictionary[str(iMessageCode)], "(SlaveAddress: ", sSlaveAddress, ")"
 
-    print sConsoleMessage
+    print "".join(sConsoleMessage)
 
     gwStatusMessage = "DEBUGGER: ", sLogMessage
     oGW_MessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_SENT, "gwStatusMessage": gwStatusMessage}
@@ -317,7 +317,7 @@ def print_i2cMessageReceived(sSlaveAddress, iResponseCode):
         sConsoleMessage = "\nMessage sent (from Master to Slave): ", bMessageStyle.FAIL, str(iResponseCode), bMessageStyle.ENDC
         sLogMessage = "\nMessage sent (from Master to Slave): ", str(iResponseCode)
     
-    print sConsoleMessage
+    print "".join(sConsoleMessage)
 
     gwStatusMessage = "DEBUGGER: ", sLogMessage
     oMessageParams = {"gwStatusCode": GW_STATUS_I2C_MESSAGE_READ, "gwStatusMessage": gwStatusMessage}
@@ -437,7 +437,7 @@ def uploadSlavesStatusUpdates():
 # Read data in those devices with pending data waing in the buffer
 def readAvalableDevices():
     if(debugMode):
-        print "Reading all available devices: ", str(i2c_activeAddresses)
+        print Reading all available devices: ", str(i2c_activeAddresses)
     if (len(i2c_activeAddresses) > 0):
         for sSlaveAddress in i2c_activeAddresses:
             # Prepare the buffer index in the slave to be read
@@ -574,6 +574,6 @@ while True:
     ###########################
     if (len(i2c_activeAddresses) <= 0 and scanCounter < scanFrecuency):
         scanCounter += 1
-    else:
+    elif (len(i2c_activeAddresses) <= 0 ):
         scanCounter = 0
         i2c_pendingScan = True
