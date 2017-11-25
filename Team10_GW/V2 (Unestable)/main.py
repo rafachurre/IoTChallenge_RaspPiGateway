@@ -437,7 +437,7 @@ def uploadSlavesStatusUpdates():
 # Read data in those devices with pending data waing in the buffer
 def readAvalableDevices():
     if(debugMode):
-        print Reading all available devices: ", str(i2c_activeAddresses)
+        print "Reading all available devices: ", str(i2c_activeAddresses)
     if (len(i2c_activeAddresses) > 0):
         for sSlaveAddress in i2c_activeAddresses:
             # Prepare the buffer index in the slave to be read
