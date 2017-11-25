@@ -124,6 +124,7 @@ DATA_REQUEST_STATUS_OPENCLOSE = 52 # Master wants to read() the open/close statu
 DATA_REQUEST_STATUS_EMPTYFULL = 53 # Master wants to read() the empty/full status. Prepare "to_send" variable for a read event
 DATA_REQUEST_STATUS_LEDSTATUS = 54 # Master wants to read() the LED blinking/off status. Prepare "to_send" variable for a read event
 
+ACTION_REQUEST_CLEAR_STATUS_BUFFER = 74 # Master requests to reset the slave status buffer
 ACTION_REQUEST_OPEN_BOX = 75 # Master requests to open the box
 ACTION_REQUEST_CLOSE_BOX = 76 # Master requests to close the box
 ACTION_REQUEST_BLINK_LED = 77 # Master requests to blink the LED
@@ -359,18 +360,21 @@ def performMasterAction(iMessageCode, iMessageData):
         sGwStatusMessage = ""
         iGwStatusCode = ""
         if(iMessageData == 1):
-            global debugMode = True
+            global debugMode
+            debugMode = True
             sGwStatusMessage = "Debug mode ENABLED"
             iGwStatusCode = GW_STATUS_DEBUG_MODE_ENABLED
         else: 
-            global debugMode = False
+            global debugMode
+            debugMode = False
             sGwStatusMessage = "Debug mode DISABLED"
             iGwStatusCode = GW_STATUS_DEBUG_MODE_DISABLED
         oMessageParams = {"gwStatusCode": iGwStatusCode, "gwStatusMessage": sGwStatusMessage}
         cloud_Post_GWStatus(oMessageParams)
 
     if (iMessageCode == GW_ACTION_SCAN_I2C_DEVICES):
-        global i2c_pendingScan = True
+        global i2c_pendingScan
+        i2c_pendingScan = True
 
 # Get Push Notifications
 def downloadPushMessages():
@@ -378,29 +382,37 @@ def downloadPushMessages():
         pushNotifications = cloud_Get_PushMsgs()
     except:
         print_GetPushMsgsError(sys.exc_info()[0])
-    global pushMessagesBuffer += pushNotifications
+    global pushMessagesBuffer
+    pushMessagesBuffer += pushNotifications
     if(debugMode):
         print "\nPush Notifications received from Cloud: ", bMessageStyle.OKBLUE, pushNotifications, bMessageStyle.ENDC
 
 # If one slave have updates, add its address to the buffer to send the data to the cloud later
 def updateSlaveWithUpdatesBuffer(sSlaveAddress):
-    global i2c_slavesWithUpdates.append(sSlaveAddress)
+    global i2c_slavesWithUpdates
+    i2c_slavesWithUpdates.append(sSlaveAddress)
 
 # update currentSlavesStatuses ==> currentSlavesStatuses[str(sSlaveAddress)][statusName] WHERE statusName == 'openClose_status' || 'emptyFull_status' || 'LED_status'
 def updateSlaveStatus(sSlaveAddress, iStatusCode):
     if(i2c_received_code == SLAVE_STATUS_BOX_OPEN or i2c_received_code == SLAVE_STATUS_BOX_CLOSED or i2c_received_code == SLAVE_STATUS_BOX_OPENCLOSED_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
-            global currentSlavesStatuses[str(sSlaveAddress)] = {}
-        global currentSlavesStatuses[str(sSlaveAddress)]['openClose_status'] = i2c_received_code - openClose_msgsCodes_offset
+            global currentSlavesStatuses
+            currentSlavesStatuses[str(sSlaveAddress)] = {}
+        global currentSlavesStatuses
+        currentSlavesStatuses[str(sSlaveAddress)]['openClose_status'] = i2c_received_code - openClose_msgsCodes_offset
     else if(i2c_received_code == SLAVE_STATUS_BOX_EMPTY or i2c_received_code == SLAVE_STATUS_BOX_FULL or i2c_received_code == SLAVE_STATUS_BOX_EMPTYFULL_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
-            global currentSlavesStatuses[str(sSlaveAddress)] = {}
-        global currentSlavesStatuses[str(sSlaveAddress)]['emptyFull_status'] = i2c_received_code - emptyFull_msgsCodes_offset
+            global currentSlavesStatuses
+            currentSlavesStatuses[str(sSlaveAddress)] = {}
+        global currentSlavesStatuses
+        currentSlavesStatuses[str(sSlaveAddress)]['emptyFull_status'] = i2c_received_code - emptyFull_msgsCodes_offset
         
     else if(i2c_received_code == SLAVE_STATUS_LED_BLINKING or i2c_received_code == SLAVE_STATUS_LED_OFF or i2c_received_code == SLAVE_STATUS_LED_BLINKINGOFF_UNKNOWN):
         if sSlaveAddress not in currentSlavesStatuses:
-            global currentSlavesStatuses[str(sSlaveAddress)] = {}
-        global currentSlavesStatuses[str(sSlaveAddress)]['LED_status'] = i2c_received_code - LED_msgsCodes_offset
+            global currentSlavesStatuses
+            currentSlavesStatuses[str(sSlaveAddress)] = {}
+        global currentSlavesStatuses
+        currentSlavesStatuses[str(sSlaveAddress)]['LED_status'] = i2c_received_code - LED_msgsCodes_offset
 
 # If there are status updates pending to be posted in the cloud, send them
 def uploadSlavesStatusUpdates():
@@ -439,9 +451,18 @@ def readAvalableDevices():
             except:
                 print_i2c_ReadMsgError(sys.exc_info()[0])
 
-            # TODO: If slaveBufferLength > 10, then reset the slave buffer and get all statuses
+            # if slaveBuffer is greater than 10, there is an inconsistency. Clear the slave buffer and read all statuses again
+                if(slaveBufferLength > 10):
+                # Reset Slave buffer
+                try:
+                    i2c_writeMessage(sSlaveAddress, ACTION_REQUEST_CLEAR_STATUS_BUFFER, NO_DATA_IN_MESSAGE)
+                    if(debugMode):
+                        print_i2cMessageSent(sSlaveAddress, ACTION_REQUEST_CLEAR_STATUS_BUFFER)
+                except:
+                    print_i2c_WriteMsgError(sys.exc_info()[0])
 
-            if(slaveBufferLength > 0):
+            # If slaveBuffer is lower than 10 and greater than 0, then read the messages
+            else if(slaveBufferLength > 0):
                 # Add the slave address to the buffer
                 updateSlaveWithUpdatesBuffer(sSlaveAddress)
                 # Read all the pending status codes and update the list
