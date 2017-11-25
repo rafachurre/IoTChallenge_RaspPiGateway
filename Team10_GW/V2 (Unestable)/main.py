@@ -50,30 +50,30 @@ class deviceInfo:
 
 # ~ POST Messages
 class postServiceEndpoint:
-    endpoint = "<endpointURL>" + deviceInfo.deviceId
+    endpoint = "https://iotmmsaba86a276.hana.ondemand.com/com.sap.iotservices.mms/v1/api/http/data/" + deviceInfo.deviceId
 
 class Team10_SlaveAllStatusesMsg:
     url = postServiceEndpoint.endpoint
-    messageTypeId = "<message_type>"
+    messageTypeId = "62e5c26ac3a37b6f3e7a"
     headers = {'Authorization': 'Bearer ' + deviceInfo.token, 'Content-Type': 'application/json'}
     # Message:  {"messageType":messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "slaveAddress": sSlaveAddress, "slaveOpenCloseStatus":1,"slaveEmptyFullStatus":2,"slaveLEDStatus":3}]}
 
 class Team10_GWStatus:
     url = postServiceEndpoint.endpoint
-    messageTypeId = "<message_type>"
+    messageTypeId = "9ef72331790f97b6211f"
     headers = {'Authorization': 'Bearer ' + deviceInfo.token, 'Content-Type': 'application/json'}
     # Message: {"messageType": messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "gwStatusCode": 500, "gwStatusMessage": ""}]}
 
 class Team10_SlaveStatus:
     url = postServiceEndpoint.endpoint
-    messageTypeId = "<message_type>"
+    messageTypeId = "a5c0bd40319f0a61e769"
     headers = {'Authorization': 'Bearer ' + deviceInfo.token, 'Content-Type': 'application/json'}
     # Message: {"messageType": messageTypeId,"messages":[{"timestamp": "", "gwDeviceId": deviceInfo.deviceId, "slaveAddress": sSlaveAddress, "slaveStatusCode": 1}]}
     
 # ~ GET PUSH Messages
 pushMessagesBuffer = []
 class pushServiceEndpoint:
-    endpoint = "<endpointURL>" + deviceInfo.deviceId
+    endpoint = "https://iotmmsaba86a276.hana.ondemand.com/com.sap.iotservices.mms/v1/api/http/data/" + deviceInfo.deviceId
 
 class Team10_PushToGW:
     url = pushServiceEndpoint.endpoint
