@@ -83,6 +83,8 @@ class Team10_PushToGW:
 ##############
 # i2c CONFIG #
 ##############
+# This flag indicates if the initial setup is pending or not (default=True --> Set to False after first loop)
+i2c_pendingInit = True
 # bus number (0 for old version || 1 for new versions)
 i2c_smbus_number = 1 
 # for RPI version 1, use "bus = smbus.SMBus(0)
@@ -215,6 +217,18 @@ def i2c_scanDevices():
                     currentSlavesStatuses[str(hexAddress)] = {}
 
     print_i2cScanDevices(i2c_activeAddresses)
+def i2c_clearAllBuffers():
+    # Prepare the buffer index in the slave to be read
+    if(debugMode):
+        print "\nWriting ACTION_REQUEST_CLEAR_STATUS_BUFFER in all devices"
+    for sSlaveAddress in i2c_activeAddresses:
+        try:
+            i2c_writeCode(sSlaveAddress, ACTION_REQUEST_CLEAR_STATUS_BUFFER)
+            if(debugMode):
+                print_i2cMessageSent(sSlaveAddress, ACTION_REQUEST_CLEAR_STATUS_BUFFER)
+        except:
+            print_i2c_WriteMsgError(sys.exc_info()[0])
+
 
 def i2c_forceReadAllSlavesStatuses():
     # Prepare the buffer index in the slave to be read
@@ -572,6 +586,12 @@ def proccessPendingPushMessages():
 # MAIN LOOP #
 #############
 while True:
+    # on init scan and get all indexes
+    if(i2c_pendingInit):
+        i2c_pendingInit = False
+        i2c_scanDevices()
+        i2c_clearAllBuffers()
+        i2c_forceReadAllSlavesStatuses()
 
     time.sleep(mainLoopSleepTime)
 
