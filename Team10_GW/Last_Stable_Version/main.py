@@ -84,7 +84,7 @@ class Team10_PushToGW:
 # i2c CONFIG #
 ##############
 # for RPI version 1, use "bus = smbus.SMBus(0)
-bus = smbus.SMBus(0)
+bus = smbus.SMBus(1)
 # This is the collection of address active in the bus
 i2c_activeAddresses = []
 # This buffer saves the addresses of the devices that provided updates
