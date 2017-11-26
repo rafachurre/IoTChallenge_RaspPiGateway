@@ -86,7 +86,7 @@ GW_STATUS_I2C_SLAVE_BUFFER_INCONSISTENCY = 600 # Slave status buffer has more th
 ```
 > cd /home/pi/
 > sudo mkdir /pip
-> cd /hom/pi/pip
+> cd /home/pi/pip
 > sudo apt-get install python-pip
 > sudo pip install --upgrade pip
 > sudo pip install setuptools
