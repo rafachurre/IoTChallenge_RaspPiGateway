@@ -229,6 +229,8 @@ def i2c_clearAllBuffers():
         except:
             print_i2c_WriteMsgError(sys.exc_info()[0])
 
+        time.sleep(i2c_writeWrite_interval)
+
 
 def i2c_forceReadAllSlavesStatuses():
     # Prepare the buffer index in the slave to be read
@@ -241,6 +243,8 @@ def i2c_forceReadAllSlavesStatuses():
                 print_i2cMessageSent(sSlaveAddress, DATA_REQUEST_GET_ALL_STATUSES)
         except:
             print_i2c_WriteMsgError(sys.exc_info()[0])
+            
+        time.sleep(i2c_writeWrite_interval)
 
 def i2c_writeMessage(sSlaveAddress, iMessageCode, iMessageData):
     i2c_writeCode(int(str(sSlaveAddress), 16), iMessageCode)
@@ -589,7 +593,9 @@ while True:
     # on init scan and get all indexes
     if(i2c_pendingInit):
         i2c_pendingInit = False
+        i2c_pendingScan = False
         i2c_scanDevices()
+        time.sleep(3)
         i2c_clearAllBuffers()
         i2c_forceReadAllSlavesStatuses()
 
