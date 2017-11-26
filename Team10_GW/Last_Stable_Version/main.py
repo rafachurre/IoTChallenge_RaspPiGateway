@@ -181,6 +181,7 @@ i2cRequestMessagesDictionary = {
     "53": "DATA REQUEST: Slave, please prepare the 'EmptyFull_status' to be read",
     "54": "DATA REQUEST: Slave, please prepare the 'LED_status' to be read",
 
+    "74": "ACTION: Slave, please clear the status buffer",
     "75": "ACTION: Slave, please open the box",
     "76": "ACTION: Slave, please close the box",
     "77": "ACTION: Slave, please blink the LED",
