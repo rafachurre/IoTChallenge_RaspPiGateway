@@ -176,4 +176,4 @@ Setting this with the [IoTChallenge_ArduinoBoxSlaves](https://github.com/rafachu
 
 .
 
-![schematics picture](https://raw.githubusercontent.com/rafachurre/IoTChallenge_ArduinoBoxSlaves/master/Arduino_Keypad4x4_Servo_Ultrasounds_schematics_bb.jpg)
+![schematics picture](https://raw.githubusercontent.com/rafachurre/IoTChallenge_RaspPiGateway/master/Arduino_Keypad4x4_Servo_Ultrasounds_schematics.jpg)
