@@ -94,15 +94,15 @@ GW_STATUS_I2C_SLAVE_BUFFER_INCONSISTENCY = 600 # Slave status buffer has more th
 > sudo pipenv install requests
 ```
 5. Enable i2c
-  The easiest way (in my opinion) is through the raspi-config menu
+   The easiest way (in my opinion) is through the raspi-config menu
 ```
 > sudo raspi-config
 ```
-  Select the option ***"Interfacing Options" > I2C*** and follow the steps</br>
+   Select the option ***"Interfacing Options" > I2C*** and follow the steps</br>
 
-  **Manual Option**
+   **Manual Option**
 
-  Check out [this link](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c) for other options
+   Check out [this link](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c) for other options
 
 6. Install i2c-tools and python-smbus
 ```
