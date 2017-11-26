@@ -167,3 +167,13 @@ python /home/IoTChallenge_RaspPiGateway/Team10_GW/Last_Stable_Version/main.py
 
 exit 0
 ```
+
+
+
+# IoTChallenge schematics
+
+Setting this with the [IoTChallenge_ArduinoBoxSlaves](https://github.com/rafachurre/IoTChallenge_ArduinoBoxSlaves)
+
+.
+
+![schematics picture](https://raw.githubusercontent.com/rafachurre/IoTChallenge_RaspPiGateway/master/Arduino_Keypad4x4_Servo_Ultrasounds_schematics_bb.jpg)
