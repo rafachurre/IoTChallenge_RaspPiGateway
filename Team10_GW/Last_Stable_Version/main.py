@@ -83,8 +83,10 @@ class Team10_PushToGW:
 ##############
 # i2c CONFIG #
 ##############
+# bus number (0 for old version || 1 for new versions)
+i2c_smbus_number = 1
 # for RPI version 1, use "bus = smbus.SMBus(0)
-bus = smbus.SMBus(0)
+bus = smbus.SMBus(i2c_smbus_number)
 # This is the collection of address active in the bus
 i2c_activeAddresses = []
 # This buffer saves the addresses of the devices that provided updates
@@ -198,7 +200,7 @@ def i2c_scanDevices():
     global currentSlavesStatuses
     i2c_activeAddresses = []
     currentSlavesStatuses = {}
-    p = subprocess.Popen(['i2cdetect', '-y','0'],stdout=subprocess.PIPE,)
+    p = subprocess.Popen(['i2cdetect', '-y',str(i2c_smbus_number)],stdout=subprocess.PIPE,)
     #cmdout = str(p.communicate())
 
     for i in range(0,9):
