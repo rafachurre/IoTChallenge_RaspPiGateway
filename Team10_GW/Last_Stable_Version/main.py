@@ -497,20 +497,20 @@ def readAvalableDevices():
             time.sleep(i2c_writeRead_interval)
 
             # Read Response Code (i2c)
-            slaveBufferLength = 0
+            iSlaveBufferLength = 0
             if(debugMode):
                 print "\nReading Status_Buffer_Length from slave: ", sSlaveAddress
             try:
-                slaveBufferLength = i2c_readCode(sSlaveAddress)
+                iSlaveBufferLength = i2c_readCode(sSlaveAddress)
                 if(debugMode):
-                    print_i2cBufferLenghtReceived(sSlaveAddress, slaveBufferLength)
+                    print_i2cBufferLenghtReceived(sSlaveAddress, iSlaveBufferLength)
             except:
                 print_i2c_ReadMsgError(sys.exc_info()[0])
 
             # if slaveBuffer is greater than 10, there is an inconsistency. Clear the slave buffer and read all statuses again
-            if(slaveBufferLength > 10):
+            if(iSlaveBufferLength > 10):
                 if(debugMode):
-                    print_i2c_SlaveBufferLength_Inconsistency(sSlaveAddress, iBufferLength)
+                    print_i2c_SlaveBufferLength_Inconsistency(sSlaveAddress, iSlaveBufferLength)
                 # Reset Slave buffer
                 try:
                     i2c_writeMessage(sSlaveAddress, ACTION_REQUEST_CLEAR_STATUS_BUFFER, NO_DATA_IN_MESSAGE)
@@ -520,13 +520,13 @@ def readAvalableDevices():
                     print_i2c_WriteMsgError(sys.exc_info()[0])
 
             # If slaveBuffer is lower than 10 and greater than 0, then read the
-            elif(slaveBufferLength > 0):
+            elif(iSlaveBufferLength > 0):
                 if(debugMode):
-                    print "\nReading ", slaveBufferLength, " pending items from slave: ", sSlaveAddress
+                    print "\nReading ", iSlaveBufferLength, " pending items from slave: ", sSlaveAddress
                 # Add the slave address to the buffer
                 updateSlaveWithUpdatesBuffer(sSlaveAddress)
                 # Read all the pending status codes and update the list
-                for i in range(0, slaveBufferLength):
+                for i in range(0, iSlaveBufferLength):
                     time.sleep(i2c_readRead_interval)
                     i2c_received_code = 0
                     try:
