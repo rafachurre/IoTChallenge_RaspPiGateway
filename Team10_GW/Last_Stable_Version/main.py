@@ -84,7 +84,7 @@ class Team10_PushToGW:
 # i2c CONFIG #
 ##############
 # bus number (0 for old version || 1 for new versions)
-i2c_smbus_number = 1
+i2c_smbus_number = 1 
 # for RPI version 1, use "bus = smbus.SMBus(0)
 bus = smbus.SMBus(i2c_smbus_number)
 # This is the collection of address active in the bus
