@@ -118,7 +118,9 @@ GW_STATUS_I2C_SLAVE_BUFFER_INCONSISTENCY = 600 # Slave status buffer has more th
 ```
 
 8. Modify "deviceInfo" class: Set the "deviceId" and the OAuth Token for enabling the cloud interaction.
+```
 sudo nano main.py
+```
 
     a) set deviceId instead of "<DeviceID>"
 
